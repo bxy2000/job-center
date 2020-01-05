@@ -1,0 +1,6 @@
+# Project exclude paths
+/job-admin/target/
+/job-core/target/
+/job-executor/target/
+/job-registry/target/
+/job-rpc/target/
