@@ -12,6 +12,7 @@
         <module>job-rpc</module>
         <module>job-executor</module>
         <module>job-core</module>
+        <module>assembly</module>
     </modules>
     <packaging>pom</packaging>
 
