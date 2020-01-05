@@ -3,7 +3,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
 
     <fileSets>
         <fileSet>
@@ -50,7 +50,6 @@
             <outputDirectory>bin\job-executor</outputDirectory>
             <includes>
                 <include>application.properties</include>
-                <include>logback.xml</include>
             </includes>
         </fileSet>
         <fileSet>
