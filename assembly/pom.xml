@@ -33,6 +33,7 @@
     </dependencies>
 
     <build>
+        <finalName>job-center</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

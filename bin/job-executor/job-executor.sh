@@ -1,9 +1,9 @@
 #!/bin/bash
 
-APP_NAME=job-admin.jar
+APP_NAME=job-executor.jar
 
 usage() {
-  echo "Usage: sh job-admin.sh [start|stop|restart|status]"
+  echo "Usage: sh job-executor.sh [start|stop|restart|status]"
 }
 
 exists() {
@@ -23,8 +23,8 @@ start() {
   else
     nohup java -jar $APP_NAME --spring.config.local=application.yml > ${APP_NAME}.log 2>&1 &
     echo "${APP_NAME} start success"
-    echo "press ctrl+c to quit."
-    tail -f ${APP_NAME}.log 
+    echo "press ctrl+c quit."
+    tail -f ${APP_NAME}.log
   fi
 }
 
@@ -32,7 +32,7 @@ stop() {
   exists
   if [ $? -eq "0" ]; then
     kill -9 $pid
-    echo "job admin is stoped."
+    echo "job-executor is stoped."
   else
     echo "${APP_NAME} is not running"
   fi
