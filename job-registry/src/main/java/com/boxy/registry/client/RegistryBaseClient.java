@@ -12,74 +12,83 @@ import java.util.*;
 public class RegistryBaseClient {
     private static Logger logger = LoggerFactory.getLogger(RegistryBaseClient.class);
 
-    private String adminAddress;
+    private static final String API_REGISTRY = "/api/registry";
+    private static final String API_REMOVE = "/api/remove";
+    private static final String API_DISCOVERY = "/api/discovery";
+    private static final String API_MONITOR = "/api/monitor";
+
     private String accessToken;
     private String biz;
     private String env;
 
-    private List<String> adminAddressArr;
-
+    private List<String> adminAddressArr = new ArrayList<>();
 
     public RegistryBaseClient(String adminAddress, String accessToken, String biz, String env) {
-        this.adminAddress = adminAddress;
+        // valid
+        if (adminAddress == null || adminAddress.trim().length() == 0) {
+            throw new RuntimeException("job-registry adminAddress empty");
+        }
+        if (biz == null || biz.trim().length() < 4 || biz.trim().length() > 255) {
+            throw new RuntimeException("job-registry biz empty Invalid[4~255]");
+        }
+        if (env == null || env.trim().length() < 2 || env.trim().length() > 255) {
+            throw new RuntimeException("job-registry biz env Invalid[2~255]");
+        }
+
         this.accessToken = accessToken;
         this.biz = biz;
         this.env = env;
 
-        // valid
-        if (adminAddress==null || adminAddress.trim().length()==0) {
-            throw new RuntimeException("job-registry adminAddress empty");
-        }
-        if (biz==null || biz.trim().length()<4 || biz.trim().length()>255) {
-            throw new RuntimeException("job-registry biz empty Invalid[4~255]");
-        }
-        if (env==null || env.trim().length()<2 || env.trim().length()>255) {
-            throw new RuntimeException("job-registry biz env Invalid[2~255]");
-        }
-
         // parse
-        adminAddressArr = new ArrayList<>();
         if (adminAddress.contains(",")) {
-            adminAddressArr.addAll(Arrays.asList(adminAddress.split(",")));
+            this.adminAddressArr.addAll(Arrays.asList(adminAddress.split(",")));
         } else {
-            adminAddressArr.add(adminAddress);
+            this.adminAddressArr.add(adminAddress);
         }
     }
 
-    public boolean registry(List<RegistryDataParam> registryDataList){
-        // valid
-        if (registryDataList==null || registryDataList.size()==0) {
-            throw new RuntimeException("job-registry registryDataList empty");
-        }
-        for (RegistryDataParam registryParam: registryDataList) {
-            if (registryParam.getKey()==null || registryParam.getKey().trim().length()<4 || registryParam.getKey().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#key Invalid[4~255]");
-            }
-            if (registryParam.getValue()==null || registryParam.getValue().trim().length()<4 || registryParam.getValue().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#value Invalid[4~255]");
-            }
-        }
+    // 注册
+    public boolean registry(List<RegistryDataParam> registryDataList) {
+        return callApi(registryDataList, API_REGISTRY);
+    }
 
-        // pathUrl
-        String pathUrl = "/api/registry";
+    // 注销/移除
+    public boolean remove(List<RegistryDataParam> registryDataList) {
+        return callApi(registryDataList, API_REMOVE);
+    }
+
+    private boolean callApi(List<RegistryDataParam> registryDataList, String api) {
+        // valid
+        checkRegistryDataList(registryDataList);
 
         // param
-        RegistryParam registryParam = new RegistryParam();
-        registryParam.setAccessToken(this.accessToken);
-        registryParam.setBiz(this.biz);
-        registryParam.setEnv(this.env);
-        registryParam.setRegistryDataList(registryDataList);
+        RegistryParam registryParam = new RegistryParam(this.accessToken, this.biz, this.env, registryDataList, null);
 
         String paramsJson = BasicJson.toJson(registryParam);
 
         // result
-        Map<String, Object> respObj = requestAndValid(pathUrl, paramsJson, 5);
-        return respObj!=null?true:false;
+        Map<String, Object> respObj = requestAndValid(api, paramsJson, 5);
+        return respObj != null;
     }
 
-    private Map<String, Object> requestAndValid(String pathUrl, String requestBody, int timeout){
 
-        for (String adminAddressUrl: adminAddressArr) {
+    static void checkRegistryDataList(List<RegistryDataParam> registryDataList) {
+        if (registryDataList == null || registryDataList.size() == 0) {
+            throw new RuntimeException("job-registry registryDataList empty");
+        }
+        for (RegistryDataParam registryParam : registryDataList) {
+            if (registryParam.getKey() == null || registryParam.getKey().trim().length() < 4 || registryParam.getKey().trim().length() > 255) {
+                throw new RuntimeException("job-registry registryDataList#key Invalid[4~255]");
+            }
+            if (registryParam.getValue() == null || registryParam.getValue().trim().length() < 4 || registryParam.getValue().trim().length() > 255) {
+                throw new RuntimeException("job-registry registryDataList#value Invalid[4~255]");
+            }
+        }
+    }
+
+    private Map<String, Object> requestAndValid(String pathUrl, String requestBody, int timeout) {
+
+        for (String adminAddressUrl : adminAddressArr) {
             String finalUrl = adminAddressUrl + pathUrl;
 
             // request
@@ -92,14 +101,16 @@ public class RegistryBaseClient {
             Map<String, Object> resopnseMap = null;
             try {
                 resopnseMap = BasicJson.parseMap(responseData);
-            } catch (Exception e) { }
+            } catch (Exception e) {
+                // ignore
+            }
 
 
             // valid resopnse
-            if (resopnseMap==null
+            if (resopnseMap == null
                     || !resopnseMap.containsKey("code")
                     || !"200".equals(String.valueOf(resopnseMap.get("code")))
-                    ) {
+            ) {
                 logger.warn("RegistryBaseClient response fail, responseData={}", responseData);
                 return null;
             }
@@ -111,62 +122,23 @@ public class RegistryBaseClient {
         return null;
     }
 
-    public boolean remove(List<RegistryDataParam> registryDataList) {
-        // valid
-        if (registryDataList==null || registryDataList.size()==0) {
-            throw new RuntimeException("job-registry registryDataList empty");
-        }
-        for (RegistryDataParam registryParam: registryDataList) {
-            if (registryParam.getKey()==null || registryParam.getKey().trim().length()<4 || registryParam.getKey().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#key Invalid[4~255]");
-            }
-            if (registryParam.getValue()==null || registryParam.getValue().trim().length()<4 || registryParam.getValue().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#value Invalid[4~255]");
-            }
-        }
-
-        // pathUrl
-        String pathUrl = "/api/remove";
-
-        // param
-        RegistryParam registryParam = new RegistryParam();
-        registryParam.setAccessToken(this.accessToken);
-        registryParam.setBiz(this.biz);
-        registryParam.setEnv(this.env);
-        registryParam.setRegistryDataList(registryDataList);
-
-        String paramsJson = BasicJson.toJson(registryParam);
-
-        // result
-        Map<String, Object> respObj = requestAndValid(pathUrl, paramsJson, 5);
-        return respObj!=null?true:false;
-    }
-
     public Map<String, TreeSet<String>> discovery(Set<String> keys) {
         // valid
-        if (keys==null || keys.size()==0) {
+        if (keys == null || keys.size() == 0) {
             throw new RuntimeException("job-registry keys empty");
         }
 
-        // pathUrl
-        String pathUrl = "/api/discovery";
-
         // param
-        RegistryParam registryParam = new RegistryParam();
-        registryParam.setAccessToken(this.accessToken);
-        registryParam.setBiz(this.biz);
-        registryParam.setEnv(this.env);
-        registryParam.setKeys(new ArrayList<String>(keys));
+        RegistryParam registryParam = new RegistryParam(this.accessToken, this.biz, this.env, null, new ArrayList<>(keys));
 
         String paramsJson = BasicJson.toJson(registryParam);
 
         // result
-        Map<String, Object> respObj = requestAndValid(pathUrl, paramsJson, 5);
+        Map<String, Object> respObj = requestAndValid(API_DISCOVERY, paramsJson, 5);
 
         // parse
-        if (respObj!=null && respObj.containsKey("data")) {
-            Map<String, TreeSet<String>> data = (Map<String, TreeSet<String>>) respObj.get("data");
-            return data;
+        if (respObj != null && respObj.containsKey("data")) {
+            return (Map<String, TreeSet<String>>) respObj.get("data");
         }
 
         return null;
@@ -174,24 +146,17 @@ public class RegistryBaseClient {
 
     public boolean monitor(Set<String> keys) {
         // valid
-        if (keys==null || keys.size()==0) {
+        if (keys == null || keys.size() == 0) {
             throw new RuntimeException("job-registry keys empty");
         }
 
-        // pathUrl
-        String pathUrl = "/api/monitor";
-
         // param
-        RegistryParam registryParam = new RegistryParam();
-        registryParam.setAccessToken(this.accessToken);
-        registryParam.setBiz(this.biz);
-        registryParam.setEnv(this.env);
-        registryParam.setKeys(new ArrayList<String>(keys));
+        RegistryParam registryParam = new RegistryParam(this.accessToken, this.biz, this.env, null, new ArrayList<>(keys));
 
         String paramsJson = BasicJson.toJson(registryParam);
 
         // result
-        Map<String, Object> respObj = requestAndValid(pathUrl, paramsJson, 60);
-        return respObj!=null?true:false;
+        Map<String, Object> respObj = requestAndValid(API_MONITOR, paramsJson, 60);
+        return respObj != null;
     }
 }

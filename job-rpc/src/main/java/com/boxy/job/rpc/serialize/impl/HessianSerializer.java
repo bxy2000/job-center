@@ -12,49 +12,30 @@ import java.io.IOException;
 public class HessianSerializer extends Serializer {
 	@Override
 	public <T> byte[] serialize(T obj){
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		Hessian2Output ho = new Hessian2Output(os);
-		try {
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			Hessian2Output ho = new Hessian2Output(os);
+
 			ho.writeObject(obj);
 			ho.flush();
+
 			byte[] result = os.toByteArray();
+			ho.close();
 			return result;
 		} catch (IOException e) {
 			throw new RpcException(e);
-		} finally {
-			try {
-				ho.close();
-			} catch (IOException e) {
-				throw new RpcException(e);
-			}
-			try {
-				os.close();
-			} catch (IOException e) {
-				throw new RpcException(e);
-			}
 		}
 	}
-
 	@Override
 	public <T> Object deserialize(byte[] bytes, Class<T> clazz) {
-		ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-		Hessian2Input hi = new Hessian2Input(is);
-		try {
+		try(ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
+			Hessian2Input hi = new Hessian2Input(is);
+
 			Object result = hi.readObject();
+			hi.close();
+
 			return result;
 		} catch (IOException e) {
 			throw new RpcException(e);
-		} finally {
-			try {
-				hi.close();
-			} catch (Exception e) {
-				throw new RpcException(e);
-			}
-			try {
-				is.close();
-			} catch (IOException e) {
-				throw new RpcException(e);
-			}
 		}
 	}
 }

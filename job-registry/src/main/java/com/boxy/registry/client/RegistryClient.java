@@ -35,9 +35,8 @@ public class RegistryClient {
                 while (!registryThreadStop) {
                     try {
                         if (registryData.size() > 0) {
-
                             boolean ret = registryBaseClient.registry(new ArrayList<RegistryDataParam>(registryData));
-                            logger.debug("job-registry, refresh registry data {}, registryData = {}", ret?"success":"fail",registryData);
+                            logger.debug("job-registry, refresh registry data {}, registryData = {}", ret ? "success" : "fail", registryData);
                         }
                     } catch (Exception e) {
                         if (!registryThreadStop) {
@@ -79,7 +78,7 @@ public class RegistryClient {
                             boolean monitorRet = registryBaseClient.monitor(discoveryData.keySet());
 
                             // avoid fail-retry request too quick
-                            if (!monitorRet){
+                            if (!monitorRet) {
                                 TimeUnit.SECONDS.sleep(10);
                             }
 
@@ -114,20 +113,10 @@ public class RegistryClient {
         }
     }
 
-    public boolean registry(List<RegistryDataParam> registryDataList){
+    public boolean registry(List<RegistryDataParam> registryDataList) {
 
         // valid
-        if (registryDataList==null || registryDataList.size()==0) {
-            throw new RuntimeException("job-registry registryDataList empty");
-        }
-        for (RegistryDataParam registryParam: registryDataList) {
-            if (registryParam.getKey()==null || registryParam.getKey().trim().length()<4 || registryParam.getKey().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#key Invalid[4~255]");
-            }
-            if (registryParam.getValue()==null || registryParam.getValue().trim().length()<4 || registryParam.getValue().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#value Invalid[4~255]");
-            }
-        }
+        RegistryBaseClient.checkRegistryDataList(registryDataList);
 
         // cache
         registryData.addAll(registryDataList);
@@ -140,17 +129,7 @@ public class RegistryClient {
 
     public boolean remove(List<RegistryDataParam> registryDataList) {
         // valid
-        if (registryDataList==null || registryDataList.size()==0) {
-            throw new RuntimeException("job-registry registryDataList empty");
-        }
-        for (RegistryDataParam registryParam: registryDataList) {
-            if (registryParam.getKey()==null || registryParam.getKey().trim().length()<4 || registryParam.getKey().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#key Invalid[4~255]");
-            }
-            if (registryParam.getValue()==null || registryParam.getValue().trim().length()<4 || registryParam.getValue().trim().length()>255) {
-                throw new RuntimeException("job-registry registryDataList#value Invalid[4~255]");
-            }
-        }
+        RegistryBaseClient.checkRegistryDataList(registryDataList);
 
         // cache
         registryData.removeAll(registryDataList);
@@ -162,7 +141,7 @@ public class RegistryClient {
     }
 
     public Map<String, TreeSet<String>> discovery(Set<String> keys) {
-        if (keys==null || keys.size() == 0) {
+        if (keys == null || keys.size() == 0) {
             return null;
         }
 
@@ -197,8 +176,8 @@ public class RegistryClient {
     /**
      * refreshDiscoveryData, some or all
      */
-    private void refreshDiscoveryData(Set<String> keys){
-        if (keys==null || keys.size() == 0) {
+    private void refreshDiscoveryData(Set<String> keys) {
+        if (keys == null || keys.size() == 0) {
             return;
         }
 
@@ -206,8 +185,8 @@ public class RegistryClient {
         Map<String, TreeSet<String>> updatedData = new HashMap<>();
 
         Map<String, TreeSet<String>> keyValueListData = registryBaseClient.discovery(keys);
-        if (keyValueListData!=null) {
-            for (String keyItem: keyValueListData.keySet()) {
+        if (keyValueListData != null) {
+            for (String keyItem : keyValueListData.keySet()) {
 
                 // list > set
                 TreeSet<String> valueSet = new TreeSet<>();
@@ -216,7 +195,7 @@ public class RegistryClient {
                 // valid if updated
                 boolean updated = true;
                 TreeSet<String> oldValSet = discoveryData.get(keyItem);
-                if (oldValSet!=null && BasicJson.toJson(oldValSet).equals(BasicJson.toJson(valueSet))) {
+                if (oldValSet != null && BasicJson.toJson(oldValSet).equals(BasicJson.toJson(valueSet))) {
                     updated = false;
                 }
 
@@ -237,7 +216,7 @@ public class RegistryClient {
 
 
     public TreeSet<String> discovery(String key) {
-        if (key==null) {
+        if (key == null) {
             return null;
         }
 
@@ -247,6 +226,4 @@ public class RegistryClient {
         }
         return null;
     }
-
-
 }

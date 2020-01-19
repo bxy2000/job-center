@@ -88,7 +88,7 @@ job.executor.port=9999
 ## 6 工作原理
 #### 1. 执行器运行起来，会将自己注册到管理平台
 #### 2. 管理平台制作调度任务，会根据一定的调度策略指定执行器执行任务
-## 7 示例（备份oracle数据库，linux平台）
+## 7 示例一（备份oracle数据库，linux平台）
 ```
 1. 访问http://localhost:8080/job-admin
 2. 用户名/密码  admin/123456
@@ -111,5 +111,25 @@ job.executor.port=9999
 backup.sh
 restore.sh 在doc目录下
 
-
+## 7 示例二（执行kettle转换,windows平台）
+```
+1. 访问http://localhost:8080/job-admin
+2. 用户名/密码  admin/123456
+3. 调度任务
+4. 新增调度任务
+5. 运行模式
+   windows下选择powershell
+   linux下选择shell
+6. cron编辑任务定时策略
+7. 其他按要求填写
+8. 保存任务
+9. 点击操作下拉框，选择GLUE IDE
+10. 编写以下脚本并保存
+    e:
+    cd /
+    cd data-integration
+    ./Pan.bat /file F:\kettle\bxy\aaa.ktr /level Detailed /logfile D:\aaa\aaa-bbb-1.log
+    exit 0
+11. 运行调度任务
+```
 
