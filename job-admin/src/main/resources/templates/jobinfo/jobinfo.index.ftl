@@ -7,7 +7,7 @@
   	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
     <title>${I18n.admin_name}</title>
 </head>
-<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["job_adminlte_settings"]?exists && "off" == cookieMap["job_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["xxljob_adminlte_settings"]?exists && "off" == cookieMap["xxljob_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
 	<!-- header -->
 	<@netCommon.commonHeader />
@@ -192,17 +192,17 @@
 <input type="hidden" name="glueRemark" value="GLUE代码初始化" >
 <textarea name="glueSource" style="display:none;" ></textarea>
 <textarea class="glueSource_java" style="display:none;" >
-package com.boxy.job.service.handler;
+package com.xxl.job.service.handler;
 
-import com.boxy.job.core.log.JobLogger;
-import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.job.core.handler.IJobHandler;
+import com.xxl.job.core.log.XxlJobLogger;
+import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.handler.IJobHandler;
 
 public class DemoGlueJobHandler extends IJobHandler {
 
 	@Override
 	public ReturnT<String> execute(String param) throws Exception {
-		JobLogger.log("JOB-CENTER, Hello World.");
+		XxlJobLogger.log("XXL-JOB, Hello World.");
 		return ReturnT.SUCCESS;
 	}
 
@@ -210,7 +210,7 @@ public class DemoGlueJobHandler extends IJobHandler {
 </textarea>
 <textarea class="glueSource_shell" style="display:none;" >
 #!/bin/bash
-echo "job: hello shell"
+echo "xxl-job: hello shell"
 
 echo "${I18n.jobinfo_script_location}：$0"
 echo "${I18n.jobinfo_field_executorparam}：$1"
@@ -232,7 +232,7 @@ exit 0
 import time
 import sys
 
-print "job: hello python"
+print "xxl-job: hello python"
 
 print "${I18n.jobinfo_script_location}：", sys.argv[0]
 print "${I18n.jobinfo_field_executorparam}：", sys.argv[1]
@@ -254,7 +254,7 @@ logging.info("脚本文件：" + sys.argv[0])
 <textarea class="glueSource_php" style="display:none;" >
 <?php
 
-    echo "job: hello php  \n";
+    echo "xxl-job: hello php  \n";
 
     echo "${I18n.jobinfo_script_location}：$argv[0]  \n";
     echo "${I18n.jobinfo_field_executorparam}：$argv[1]  \n";
@@ -268,7 +268,7 @@ logging.info("脚本文件：" + sys.argv[0])
 </textarea>
 <textarea class="glueSource_nodejs" style="display:none;" >
 #!/usr/bin/env node
-console.log("job: hello nodejs")
+console.log("xxl-job: hello nodejs")
 
 var arguments = process.argv
 
@@ -284,7 +284,7 @@ console.log("Good bye!")
 process.exit(0)
 </textarea>
 <textarea class="glueSource_powershell" style="display:none;" >
-Write-Host "job: hello powershell"
+Write-Host "xxl-job: hello powershell"
 
 Write-Host "${I18n.jobinfo_script_location}: " $MyInvocation.MyCommand.Definition
 Write-Host "${I18n.jobinfo_field_executorparam}: "
@@ -405,6 +405,12 @@ exit 0
                         <label for="firstname" class="col-sm-2 control-label">${I18n.jobinfo_field_executorparam}<font color="black">*</font></label>
                         <div class="col-sm-10">
                             <textarea class="textarea form-control" name="executorParam" placeholder="${I18n.system_please_input}${I18n.jobinfo_field_executorparam}" maxlength="512" style="height: 63px; line-height: 1.2;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstname" class="col-sm-2 control-label">${I18n.jobgroup_field_registryList}<font color="black">*</font></label>
+                        <div class="col-sm-10">
+                            <textarea class="textarea form-control" name="addressList" placeholder="${I18n.jobinfo_opt_run_tips}" maxlength="512" style="height: 63px; line-height: 1.2;"></textarea>
                         </div>
                     </div>
                     <hr>

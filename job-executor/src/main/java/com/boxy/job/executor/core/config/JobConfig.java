@@ -14,17 +14,20 @@ public class JobConfig {
     @Value("${job.admin.addresses}")
     private String adminAddresses;
 
+    @Value("${job.accessToken}")
+    private String accessToken;
+
     @Value("${job.executor.appname}")
-    private String appName;
+    private String appname;
+
+    @Value("${job.executor.address}")
+    private String address;
 
     @Value("${job.executor.ip}")
     private String ip;
 
     @Value("${job.executor.port}")
     private int port;
-
-    @Value("${job.accessToken}")
-    private String accessToken;
 
     @Value("${job.executor.logpath}")
     private String logPath;
@@ -38,7 +41,8 @@ public class JobConfig {
         logger.info("job config init.");
         JobSpringExecutor jobSpringExecutor = new JobSpringExecutor();
         jobSpringExecutor.setAdminAddresses(adminAddresses);
-        jobSpringExecutor.setAppName(appName);
+        jobSpringExecutor.setAppname(appname);
+        jobSpringExecutor.setAddress(address);
         jobSpringExecutor.setIp(ip);
         jobSpringExecutor.setPort(port);
         jobSpringExecutor.setAccessToken(accessToken);

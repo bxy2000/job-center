@@ -11,8 +11,8 @@ import com.boxy.job.core.biz.ExecutorBiz;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.biz.model.TriggerParam;
 import com.boxy.job.core.enums.ExecutorBlockStrategyEnum;
-import com.boxy.job.rpc.util.IpUtil;
-import com.boxy.job.rpc.util.ThrowableUtil;
+import com.boxy.job.core.util.IpUtil;
+import com.boxy.job.core.util.ThrowableUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +33,17 @@ public class JobTrigger {
      * @param executorParam
      *          null: use job param
      *          not null: cover job param
+     * @param addressList
+     *          null: use executor addressList
+     *          not null: cover
      */
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
+    public static void trigger(int jobId,
+                               TriggerTypeEnum triggerType,
+                               int failRetryCount,
+                               String executorShardingParam,
+                               String executorParam,
+                               String addressList) {
+
         // load data
         JobInfo jobInfo = JobAdminConfig.getAdminConfig().getJobInfoDao().loadById(jobId);
         if (jobInfo == null) {
@@ -46,6 +55,12 @@ public class JobTrigger {
         }
         int finalFailRetryCount = failRetryCount>=0?failRetryCount:jobInfo.getExecutorFailRetryCount();
         JobGroup group = JobAdminConfig.getAdminConfig().getJobGroupDao().load(jobInfo.getJobGroup());
+
+        // cover addressList
+        if (addressList!=null && addressList.trim().length()>0) {
+            group.setAddressType(1);
+            group.setAddressList(addressList.trim());
+        }
 
         // sharding param
         int[] shardingParam = null;

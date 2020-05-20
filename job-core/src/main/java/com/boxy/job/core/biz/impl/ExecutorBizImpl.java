@@ -1,14 +1,12 @@
 package com.boxy.job.core.biz.impl;
 
 import com.boxy.job.core.biz.ExecutorBiz;
+import com.boxy.job.core.biz.model.*;
 import com.boxy.job.core.glue.GlueFactory;
 import com.boxy.job.core.glue.GlueTypeEnum;
 import com.boxy.job.core.handler.impl.GlueJobHandler;
 import com.boxy.job.core.handler.impl.ScriptJobHandler;
 import com.boxy.job.core.log.JobFileAppender;
-import com.boxy.job.core.biz.model.LogResult;
-import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.job.core.biz.model.TriggerParam;
 import com.boxy.job.core.enums.ExecutorBlockStrategyEnum;
 import com.boxy.job.core.executor.JobExecutor;
 import com.boxy.job.core.handler.IJobHandler;
@@ -27,11 +25,11 @@ public class ExecutorBizImpl implements ExecutorBiz {
     }
 
     @Override
-    public ReturnT<String> idleBeat(int jobId) {
+    public ReturnT<String> idleBeat(IdleBeatParam idleBeatParam) {
 
         // isRunningOrHasQueue
         boolean isRunningOrHasQueue = false;
-        JobThread jobThread = JobExecutor.loadJobThread(jobId);
+        JobThread jobThread = JobExecutor.loadJobThread(idleBeatParam.getJobId());
         if (jobThread != null && jobThread.isRunningOrHasQueue()) {
             isRunningOrHasQueue = true;
         }
@@ -40,27 +38,6 @@ public class ExecutorBizImpl implements ExecutorBiz {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "job thread is running or has trigger queue.");
         }
         return ReturnT.SUCCESS;
-    }
-
-    @Override
-    public ReturnT<String> kill(int jobId) {
-        // kill handlerThread, and create new one
-        JobThread jobThread = JobExecutor.loadJobThread(jobId);
-        if (jobThread != null) {
-            JobExecutor.removeJobThread(jobId, "scheduling center kill job.");
-            return ReturnT.SUCCESS;
-        }
-
-        return new ReturnT<String>(ReturnT.SUCCESS_CODE, "job thread already killed.");
-    }
-
-    @Override
-    public ReturnT<LogResult> log(long logDateTim, long logId, int fromLineNum) {
-        // log filename: logPath/yyyy-MM-dd/9999.log
-        String logFileName = JobFileAppender.makeLogFileName(new Date(logDateTim), logId);
-
-        LogResult logResult = JobFileAppender.readLog(logFileName, fromLineNum);
-        return new ReturnT<LogResult>(logResult);
     }
 
     @Override
@@ -99,7 +76,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
             // valid old jobThread
             if (jobThread != null &&
                     !(jobThread.getHandler() instanceof GlueJobHandler
-                        && ((GlueJobHandler) jobThread.getHandler()).getGlueUpdatetime()==triggerParam.getGlueUpdatetime() )) {
+                            && ((GlueJobHandler) jobThread.getHandler()).getGlueUpdatetime()==triggerParam.getGlueUpdatetime() )) {
                 // change handler or gluesource updated, need kill old thread
                 removeOldReason = "change job source or glue type, and terminate the old job thread.";
 
@@ -166,6 +143,27 @@ public class ExecutorBizImpl implements ExecutorBiz {
         // push data to queue
         ReturnT<String> pushResult = jobThread.pushTriggerQueue(triggerParam);
         return pushResult;
+    }
+
+    @Override
+    public ReturnT<String> kill(KillParam killParam) {
+        // kill handlerThread, and create new one
+        JobThread jobThread = JobExecutor.loadJobThread(killParam.getJobId());
+        if (jobThread != null) {
+            JobExecutor.removeJobThread(killParam.getJobId(), "scheduling center kill job.");
+            return ReturnT.SUCCESS;
+        }
+
+        return new ReturnT<String>(ReturnT.SUCCESS_CODE, "job thread already killed.");
+    }
+
+    @Override
+    public ReturnT<LogResult> log(LogParam logParam) {
+        // log filename: logPath/yyyy-MM-dd/9999.log
+        String logFileName = JobFileAppender.makeLogFileName(new Date(logParam.getLogDateTim()), logParam.getLogId());
+
+        LogResult logResult = JobFileAppender.readLog(logFileName, logParam.getFromLineNum());
+        return new ReturnT<LogResult>(logResult);
     }
 
 }

@@ -20,4 +20,16 @@ public interface JobGroupDao {
     public int remove(@Param("id") int id);
 
     public JobGroup load(@Param("id") int id);
+
+    public List<JobGroup> pageList(@Param("offset") int offset,
+                                      @Param("pagesize") int pagesize,
+                                      @Param("appname") String appname,
+                                      @Param("title") String title);
+
+    public int pageListCount(@Param("offset") int offset,
+                             @Param("pagesize") int pagesize,
+                             @Param("appname") String appname,
+                             @Param("title") String title);
+
+
 }

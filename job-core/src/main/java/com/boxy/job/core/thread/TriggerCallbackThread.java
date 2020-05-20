@@ -8,6 +8,7 @@ import com.boxy.job.core.log.JobFileAppender;
 import com.boxy.job.core.log.JobLogger;
 import com.boxy.job.core.enums.RegistryConfig;
 import com.boxy.job.core.util.FileUtil;
+import com.boxy.job.core.util.JdkSerializeTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +202,7 @@ public class TriggerCallbackThread {
         }
 
         // append file
-        byte[] callbackParamList_bytes = JobExecutor.getSerializer().serialize(callbackParamList);
+        byte[] callbackParamList_bytes = JdkSerializeTool.serialize(callbackParamList);
 
         File callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis())));
         if (callbackLogFile.exists()) {
@@ -232,7 +233,7 @@ public class TriggerCallbackThread {
         // load and clear file, retry
         for (File callbaclLogFile: callbackLogPath.listFiles()) {
             byte[] callbackParamList_bytes = FileUtil.readFileContent(callbaclLogFile);
-            List<HandleCallbackParam> callbackParamList = (List<HandleCallbackParam>) JobExecutor.getSerializer().deserialize(callbackParamList_bytes, HandleCallbackParam.class);
+            List<HandleCallbackParam> callbackParamList = (List<HandleCallbackParam>) JdkSerializeTool.deserialize(callbackParamList_bytes, List.class);
 
             callbaclLogFile.delete();
             doCallback(callbackParamList);

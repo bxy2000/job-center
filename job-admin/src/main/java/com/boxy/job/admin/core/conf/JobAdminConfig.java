@@ -1,7 +1,7 @@
 package com.boxy.job.admin.core.conf;
 
+import com.boxy.job.admin.core.alarm.JobAlarmer;
 import com.boxy.job.admin.core.scheduler.JobScheduler;
-import com.boxy.job.admin.dao.*;
 import com.boxy.job.admin.dao.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,22 +43,22 @@ public class JobAdminConfig implements InitializingBean, DisposableBean {
     // ---------------------- JobScheduler ----------------------
 
     // conf
-    @Value("${job.i18n}")
+    @Value("${xxl.job.i18n}")
     private String i18n;
 
-    @Value("${job.accessToken}")
+    @Value("${xxl.job.accessToken}")
     private String accessToken;
 
     @Value("${spring.mail.username}")
     private String emailUserName;
 
-    @Value("${job.triggerpool.fast.max}")
+    @Value("${xxl.job.triggerpool.fast.max}")
     private int triggerPoolFastMax;
 
-    @Value("${job.triggerpool.slow.max}")
+    @Value("${xxl.job.triggerpool.slow.max}")
     private int triggerPoolSlowMax;
 
-    @Value("${job.logretentiondays}")
+    @Value("${xxl.job.logretentiondays}")
     private int logretentiondays;
 
     // dao, service
@@ -77,6 +77,8 @@ public class JobAdminConfig implements InitializingBean, DisposableBean {
     private JavaMailSender mailSender;
     @Resource
     private DataSource dataSource;
+    @Resource
+    private JobAlarmer jobAlarmer;
 
 
     public String getI18n() {
@@ -141,6 +143,10 @@ public class JobAdminConfig implements InitializingBean, DisposableBean {
 
     public DataSource getDataSource() {
         return dataSource;
+    }
+
+    public JobAlarmer getJobAlarmer() {
+        return jobAlarmer;
     }
 
 }

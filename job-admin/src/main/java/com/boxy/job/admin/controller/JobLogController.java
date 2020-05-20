@@ -10,6 +10,8 @@ import com.boxy.job.admin.dao.JobGroupDao;
 import com.boxy.job.admin.dao.JobInfoDao;
 import com.boxy.job.admin.dao.JobLogDao;
 import com.boxy.job.core.biz.ExecutorBiz;
+import com.boxy.job.core.biz.model.KillParam;
+import com.boxy.job.core.biz.model.LogParam;
 import com.boxy.job.core.biz.model.LogResult;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.util.DateUtil;
@@ -76,7 +78,7 @@ public class JobLogController {
 		List<JobInfo> list = jobInfoDao.getJobsByGroup(jobGroup);
 		return new ReturnT<List<JobInfo>>(list);
 	}
-	
+
 	@RequestMapping("/pageList")
 	@ResponseBody
 	public Map<String, Object> pageList(HttpServletRequest request,
@@ -86,7 +88,7 @@ public class JobLogController {
 
 		// valid permission
 		JobInfoController.validPermission(request, jobGroup);	// 仅管理员支持查询全部；普通用户仅支持查询有权限的 jobGroup
-		
+
 		// parse param
 		Date triggerTimeStart = null;
 		Date triggerTimeEnd = null;
@@ -97,16 +99,16 @@ public class JobLogController {
 				triggerTimeEnd = DateUtil.parseDateTime(temp[1]);
 			}
 		}
-		
+
 		// page query
 		List<JobLog> list = jobLogDao.pageList(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
 		int list_count = jobLogDao.pageListCount(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
-		
+
 		// package result
 		Map<String, Object> maps = new HashMap<String, Object>();
-	    maps.put("recordsTotal", list_count);		// 总记录数
-	    maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
-	    maps.put("data", list);  					// 分页列表
+		maps.put("recordsTotal", list_count);		// 总记录数
+		maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
+		maps.put("data", list);  					// 分页列表
 		return maps;
 	}
 
@@ -117,14 +119,14 @@ public class JobLogController {
 		ReturnT<String> logStatue = ReturnT.SUCCESS;
 		JobLog jobLog = jobLogDao.load(id);
 		if (jobLog == null) {
-            throw new RuntimeException(I18nUtil.getString("joblog_logid_unvalid"));
+			throw new RuntimeException(I18nUtil.getString("joblog_logid_unvalid"));
 		}
 
-        model.addAttribute("triggerCode", jobLog.getTriggerCode());
-        model.addAttribute("handleCode", jobLog.getHandleCode());
-        model.addAttribute("executorAddress", jobLog.getExecutorAddress());
-        model.addAttribute("triggerTime", jobLog.getTriggerTime().getTime());
-        model.addAttribute("logId", jobLog.getId());
+		model.addAttribute("triggerCode", jobLog.getTriggerCode());
+		model.addAttribute("handleCode", jobLog.getHandleCode());
+		model.addAttribute("executorAddress", jobLog.getExecutorAddress());
+		model.addAttribute("triggerTime", jobLog.getTriggerTime().getTime());
+		model.addAttribute("logId", jobLog.getId());
 		return "joblog/joblog.detail";
 	}
 
@@ -133,15 +135,15 @@ public class JobLogController {
 	public ReturnT<LogResult> logDetailCat(String executorAddress, long triggerTime, long logId, int fromLineNum){
 		try {
 			ExecutorBiz executorBiz = JobScheduler.getExecutorBiz(executorAddress);
-			ReturnT<LogResult> logResult = executorBiz.log(triggerTime, logId, fromLineNum);
+			ReturnT<LogResult> logResult = executorBiz.log(new LogParam(triggerTime, logId, fromLineNum));
 
 			// is end
-            if (logResult.getContent()!=null && logResult.getContent().getFromLineNum() > logResult.getContent().getToLineNum()) {
-                JobLog jobLog = jobLogDao.load(logId);
-                if (jobLog.getHandleCode() > 0) {
-                    logResult.getContent().setEnd(true);
-                }
-            }
+			if (logResult.getContent()!=null && logResult.getContent().getFromLineNum() > logResult.getContent().getToLineNum()) {
+				JobLog jobLog = jobLogDao.load(logId);
+				if (jobLog.getHandleCode() > 0) {
+					logResult.getContent().setEnd(true);
+				}
+			}
 
 			return logResult;
 		} catch (Exception e) {
@@ -167,7 +169,7 @@ public class JobLogController {
 		ReturnT<String> runResult = null;
 		try {
 			ExecutorBiz executorBiz = JobScheduler.getExecutorBiz(log.getExecutorAddress());
-			runResult = executorBiz.kill(jobInfo.getId());
+			runResult = executorBiz.kill(new KillParam(jobInfo.getId()));
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			runResult = new ReturnT<String>(500, e.getMessage());

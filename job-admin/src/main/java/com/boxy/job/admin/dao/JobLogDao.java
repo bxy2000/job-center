@@ -52,5 +52,6 @@ public interface JobLogDao {
 	public int updateAlarmStatus(@Param("logId") long logId,
                                  @Param("oldAlarmStatus") int oldAlarmStatus,
                                  @Param("newAlarmStatus") int newAlarmStatus);
+	public List<Long> findLostJobIds(@Param("losedTime") Date losedTime);
 
 }

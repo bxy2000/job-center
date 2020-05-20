@@ -11,9 +11,11 @@ import com.boxy.job.core.enums.RegistryConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Controller
@@ -29,12 +31,26 @@ public class JobGroupController {
 
 	@RequestMapping
 	public String index(Model model) {
-
-		// job group (executor)
-		List<JobGroup> list = jobGroupDao.findAll();
-
-		model.addAttribute("list", list);
 		return "jobgroup/jobgroup.index";
+	}
+
+	@RequestMapping("/pageList")
+	@ResponseBody
+	public Map<String, Object> pageList(HttpServletRequest request,
+										@RequestParam(required = false, defaultValue = "0") int start,
+										@RequestParam(required = false, defaultValue = "10") int length,
+										String appname, String title) {
+
+		// page query
+		List<JobGroup> list = jobGroupDao.pageList(start, length, appname, title);
+		int list_count = jobGroupDao.pageListCount(start, length, appname, title);
+
+		// package result
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put("recordsTotal", list_count);		// 总记录数
+		maps.put("recordsFiltered", list_count);	// 过滤后的总记录数
+		maps.put("data", list);  					// 分页列表
+		return maps;
 	}
 
 	@RequestMapping("/save")
@@ -42,11 +58,11 @@ public class JobGroupController {
 	public ReturnT<String> save(JobGroup jobGroup){
 
 		// valid
-		if (jobGroup.getAppName()==null || jobGroup.getAppName().trim().length()==0) {
+		if (jobGroup.getAppname()==null || jobGroup.getAppname().trim().length()==0) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input")+"AppName") );
 		}
-		if (jobGroup.getAppName().length()<4 || jobGroup.getAppName().length()>64) {
-			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_field_appName_length") );
+		if (jobGroup.getAppname().length()<4 || jobGroup.getAppname().length()>64) {
+			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_field_appname_length") );
 		}
 		if (jobGroup.getTitle()==null || jobGroup.getTitle().trim().length()==0) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input") + I18nUtil.getString("jobgroup_field_title")) );
@@ -71,18 +87,18 @@ public class JobGroupController {
 	@ResponseBody
 	public ReturnT<String> update(JobGroup jobGroup){
 		// valid
-		if (jobGroup.getAppName()==null || jobGroup.getAppName().trim().length()==0) {
+		if (jobGroup.getAppname()==null || jobGroup.getAppname().trim().length()==0) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input")+"AppName") );
 		}
-		if (jobGroup.getAppName().length()<4 || jobGroup.getAppName().length()>64) {
-			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_field_appName_length") );
+		if (jobGroup.getAppname().length()<4 || jobGroup.getAppname().length()>64) {
+			return new ReturnT<String>(500, I18nUtil.getString("jobgroup_field_appname_length") );
 		}
 		if (jobGroup.getTitle()==null || jobGroup.getTitle().trim().length()==0) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input") + I18nUtil.getString("jobgroup_field_title")) );
 		}
 		if (jobGroup.getAddressType() == 0) {
 			// 0=自动注册
-			List<String> registryList = findRegistryByAppName(jobGroup.getAppName());
+			List<String> registryList = findRegistryByAppName(jobGroup.getAppname());
 			String addressListStr = null;
 			if (registryList!=null && !registryList.isEmpty()) {
 				Collections.sort(registryList);
@@ -110,14 +126,14 @@ public class JobGroupController {
 		return (ret>0)?ReturnT.SUCCESS:ReturnT.FAIL;
 	}
 
-	private List<String> findRegistryByAppName(String appNameParam){
+	private List<String> findRegistryByAppName(String appnameParam){
 		HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
 		List<JobRegistry> list = jobRegistryDao.findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 		if (list != null) {
 			for (JobRegistry item: list) {
 				if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
-					String appName = item.getRegistryKey();
-					List<String> registryList = appAddressMap.get(appName);
+					String appname = item.getRegistryKey();
+					List<String> registryList = appAddressMap.get(appname);
 					if (registryList == null) {
 						registryList = new ArrayList<String>();
 					}
@@ -125,11 +141,11 @@ public class JobGroupController {
 					if (!registryList.contains(item.getRegistryValue())) {
 						registryList.add(item.getRegistryValue());
 					}
-					appAddressMap.put(appName, registryList);
+					appAddressMap.put(appname, registryList);
 				}
 			}
 		}
-		return appAddressMap.get(appNameParam);
+		return appAddressMap.get(appnameParam);
 	}
 
 	@RequestMapping("/remove")

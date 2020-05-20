@@ -1,7 +1,6 @@
 package com.boxy.job.core.util;
 
 import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.registry.client.util.json.BasicJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +12,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Map;
 
 public class JobRemotingUtil {
     private static Logger logger = LoggerFactory.getLogger(JobRemotingUtil.class);
-    public static String RPC_ACCESS_TOKEN = "RPC-ACCESS-TOKEN";
+    public static final String JOB_ACCESS_TOKEN = "JOB-ACCESS-TOKEN";
 
 
     // trust-https start
@@ -38,8 +36,8 @@ public class JobRemotingUtil {
         });
     }
     private static final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[]{};
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new java.security.cert.X509Certificate[]{};
         }
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
@@ -54,10 +52,12 @@ public class JobRemotingUtil {
      *
      * @param url
      * @param accessToken
+     * @param timeout
      * @param requestObj
+     * @param returnTargClassOfT
      * @return
      */
-    public static ReturnT<String> postBody(String url, String accessToken, Object requestObj, int timeout) {
+    public static ReturnT postBody(String url, String accessToken, int timeout, Object requestObj, Class returnTargClassOfT) {
         HttpURLConnection connection = null;
         BufferedReader bufferedReader = null;
         try {
@@ -84,19 +84,21 @@ public class JobRemotingUtil {
             connection.setRequestProperty("Accept-Charset", "application/json;charset=UTF-8");
 
             if(accessToken!=null && accessToken.trim().length()>0){
-                connection.setRequestProperty(RPC_ACCESS_TOKEN, accessToken);
+                connection.setRequestProperty(JOB_ACCESS_TOKEN, accessToken);
             }
 
             // do connection
             connection.connect();
 
             // write requestBody
-            String requestBody = BasicJson.toJson(requestObj);
+            if (requestObj != null) {
+                String requestBody = GsonTool.toJson(requestObj);
 
-            DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
-            dataOutputStream.write(requestBody.getBytes("UTF-8"));
-            dataOutputStream.flush();
-            dataOutputStream.close();
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.write(requestBody.getBytes("UTF-8"));
+                dataOutputStream.flush();
+                dataOutputStream.close();
+            }
 
             /*byte[] requestBodyBytes = requestBody.getBytes("UTF-8");
             connection.setRequestProperty("Content-Length", String.valueOf(requestBodyBytes.length));
@@ -108,7 +110,7 @@ public class JobRemotingUtil {
             // valid StatusCode
             int statusCode = connection.getResponseCode();
             if (statusCode != 200) {
-                return new ReturnT<String>(ReturnT.FAIL_CODE, "rpc remoting fail, StatusCode("+ statusCode +") invalid. for url : " + url);
+                return new ReturnT<String>(ReturnT.FAIL_CODE, "xxl-rpc remoting fail, StatusCode("+ statusCode +") invalid. for url : " + url);
             }
 
             // result
@@ -122,26 +124,16 @@ public class JobRemotingUtil {
 
             // parse returnT
             try {
-                Map<String, Object> resultMap = BasicJson.parseMap(resultJson);
-
-                ReturnT<String> returnT = new ReturnT<String>();
-                if (resultMap==null) {
-                    returnT.setCode(ReturnT.FAIL_CODE);
-                    returnT.setMsg("AdminBizClient Remoting call fail.");
-                } else {
-                    returnT.setCode(Integer.valueOf(String.valueOf(resultMap.get("code"))));
-                    returnT.setMsg(String.valueOf(resultMap.get("msg")));
-                    returnT.setContent(String.valueOf(resultMap.get("content")));
-                }
+                ReturnT returnT = GsonTool.fromJson(resultJson, ReturnT.class, returnTargClassOfT);
                 return returnT;
             } catch (Exception e) {
-                logger.error("rpc remoting (url="+url+") response content invalid("+ resultJson +").", e);
-                return new ReturnT<String>(ReturnT.FAIL_CODE, "rpc remoting (url="+url+") response content invalid("+ resultJson +").");
+                logger.error("xxl-rpc remoting (url="+url+") response content invalid("+ resultJson +").", e);
+                return new ReturnT<String>(ReturnT.FAIL_CODE, "xxl-rpc remoting (url="+url+") response content invalid("+ resultJson +").");
             }
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "rpc remoting error("+ e.getMessage() +"), for url : " + url);
+            return new ReturnT<String>(ReturnT.FAIL_CODE, "xxl-rpc remoting error("+ e.getMessage() +"), for url : " + url);
         } finally {
             try {
                 if (bufferedReader != null) {

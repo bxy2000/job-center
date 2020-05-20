@@ -4,12 +4,8 @@ import com.boxy.job.admin.core.conf.JobAdminConfig;
 import com.boxy.job.admin.core.thread.*;
 import com.boxy.job.admin.core.util.I18nUtil;
 import com.boxy.job.core.biz.ExecutorBiz;
+import com.boxy.job.core.biz.client.ExecutorBizClient;
 import com.boxy.job.core.enums.ExecutorBlockStrategyEnum;
-import com.boxy.job.rpc.remoting.invoker.call.CallType;
-import com.boxy.job.rpc.remoting.invoker.reference.RpcReferenceBean;
-import com.boxy.job.rpc.remoting.invoker.route.LoadBalance;
-import com.boxy.job.rpc.remoting.net.impl.netty_http.client.NettyHttpClient;
-import com.boxy.job.rpc.serialize.impl.HessianSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +23,11 @@ public class JobScheduler  {
         // admin registry monitor run
         JobRegistryMonitorHelper.getInstance().start();
 
-        // admin monitor run
+        // admin fail-monitor run
         JobFailMonitorHelper.getInstance().start();
+
+        // admin lose-monitor run
+        JobLosedMonitorHelper.getInstance().start();
 
         // admin trigger pool start
         JobTriggerPoolHelper.toStart();
@@ -39,10 +38,10 @@ public class JobScheduler  {
         // start-schedule
         JobScheduleHelper.getInstance().start();
 
-        logger.info(">>>>>>>>> init job admin success.");
+        logger.info(">>>>>>>>> init xxl-job admin success.");
     }
 
-    
+
     public void destroy() throws Exception {
 
         // stop-schedule
@@ -54,7 +53,10 @@ public class JobScheduler  {
         // admin trigger pool stop
         JobTriggerPoolHelper.toStop();
 
-        // admin monitor stop
+        // admin lose-monitor stop
+        JobLosedMonitorHelper.getInstance().toStop();
+
+        // admin fail-monitor stop
         JobFailMonitorHelper.getInstance().toStop();
 
         // admin registry stop
@@ -86,20 +88,7 @@ public class JobScheduler  {
         }
 
         // set-cache
-        RpcReferenceBean referenceBean = new RpcReferenceBean();
-        referenceBean.setClient(NettyHttpClient.class);
-        referenceBean.setSerializer(HessianSerializer.class);
-        referenceBean.setCallType(CallType.SYNC);
-        referenceBean.setLoadBalance(LoadBalance.ROUND);
-        referenceBean.setIface(ExecutorBiz.class);
-        referenceBean.setVersion(null);
-        referenceBean.setTimeout(3000);
-        referenceBean.setAddress(address);
-        referenceBean.setAccessToken(JobAdminConfig.getAdminConfig().getAccessToken());
-        referenceBean.setInvokeCallback(null);
-        referenceBean.setInvokerFactory(null);
-
-        executorBiz = (ExecutorBiz) referenceBean.getObject();
+        executorBiz = new ExecutorBizClient(address, JobAdminConfig.getAdminConfig().getAccessToken());
 
         executorBizRepository.put(address, executorBiz);
         return executorBiz;

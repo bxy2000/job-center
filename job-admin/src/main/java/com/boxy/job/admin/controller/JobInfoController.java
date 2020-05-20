@@ -35,7 +35,7 @@ public class JobInfoController {
 	private JobGroupDao jobGroupDao;
 	@Resource
 	private JobService jobService;
-	
+
 	@RequestMapping
 	public String index(HttpServletRequest request, Model model, @RequestParam(required = false, defaultValue = "-1") int jobGroup) {
 
@@ -85,56 +85,56 @@ public class JobInfoController {
 			throw new RuntimeException(I18nUtil.getString("system_permission_limit") + "[username="+ loginUser.getUsername() +"]");
 		}
 	}
-	
+
 	@RequestMapping("/pageList")
 	@ResponseBody
-	public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,  
-			@RequestParam(required = false, defaultValue = "10") int length,
-			int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
-		
+	public Map<String, Object> pageList(@RequestParam(required = false, defaultValue = "0") int start,
+										@RequestParam(required = false, defaultValue = "10") int length,
+										int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
+
 		return jobService.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 	}
-	
+
 	@RequestMapping("/add")
 	@ResponseBody
 	public ReturnT<String> add(JobInfo jobInfo) {
 		return jobService.add(jobInfo);
 	}
-	
+
 	@RequestMapping("/update")
 	@ResponseBody
 	public ReturnT<String> update(JobInfo jobInfo) {
 		return jobService.update(jobInfo);
 	}
-	
+
 	@RequestMapping("/remove")
 	@ResponseBody
 	public ReturnT<String> remove(int id) {
 		return jobService.remove(id);
 	}
-	
+
 	@RequestMapping("/stop")
 	@ResponseBody
 	public ReturnT<String> pause(int id) {
 		return jobService.stop(id);
 	}
-	
+
 	@RequestMapping("/start")
 	@ResponseBody
 	public ReturnT<String> start(int id) {
 		return jobService.start(id);
 	}
-	
+
 	@RequestMapping("/trigger")
 	@ResponseBody
 	//@PermissionLimit(limit = false)
-	public ReturnT<String> triggerJob(int id, String executorParam) {
+	public ReturnT<String> triggerJob(int id, String executorParam, String addressList) {
 		// force cover job param
 		if (executorParam == null) {
 			executorParam = "";
 		}
 
-		JobTriggerPoolHelper.trigger(id, TriggerTypeEnum.MANUAL, -1, null, executorParam);
+		JobTriggerPoolHelper.trigger(id, TriggerTypeEnum.MANUAL, -1, null, executorParam, addressList);
 		return ReturnT.SUCCESS;
 	}
 
@@ -158,5 +158,4 @@ public class JobInfoController {
 		}
 		return new ReturnT<List<String>>(result);
 	}
-	
 }

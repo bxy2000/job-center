@@ -42,8 +42,8 @@ public class JobRegistryMonitorHelper {
 							if (list != null) {
 								for (JobRegistry item: list) {
 									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
-										String appName = item.getRegistryKey();
-										List<String> registryList = appAddressMap.get(appName);
+										String appname = item.getRegistryKey();
+										List<String> registryList = appAddressMap.get(appname);
 										if (registryList == null) {
 											registryList = new ArrayList<String>();
 										}
@@ -51,14 +51,14 @@ public class JobRegistryMonitorHelper {
 										if (!registryList.contains(item.getRegistryValue())) {
 											registryList.add(item.getRegistryValue());
 										}
-										appAddressMap.put(appName, registryList);
+										appAddressMap.put(appname, registryList);
 									}
 								}
 							}
 
 							// fresh group address
 							for (JobGroup group: groupList) {
-								List<String> registryList = appAddressMap.get(group.getAppName());
+								List<String> registryList = appAddressMap.get(group.getAppname());
 								String addressListStr = null;
 								if (registryList!=null && !registryList.isEmpty()) {
 									Collections.sort(registryList);

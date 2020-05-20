@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * date util
+ */
 public class DateUtil {
 
     // ---------------------- format parse ----------------------
@@ -128,6 +131,14 @@ public class DateUtil {
 
     public static Date addDays(final Date date, final int amount) {
         return add(date, Calendar.DAY_OF_MONTH, amount);
+    }
+
+    public static Date addHours(final Date date, final int amount) {
+        return add(date, Calendar.HOUR_OF_DAY, amount);
+    }
+
+    public static Date addMinutes(final Date date, final int amount) {
+        return add(date, Calendar.MINUTE, amount);
     }
 
     private static Date add(final Date date, final int calendarField, final int amount) {

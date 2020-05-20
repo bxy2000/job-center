@@ -7,8 +7,6 @@ import com.boxy.job.core.biz.model.ReturnT;
 import java.util.List;
 
 public interface AdminBiz {
-
-
     // ---------------------- callback ----------------------
 
     /**
@@ -38,4 +36,7 @@ public interface AdminBiz {
      */
     public ReturnT<String> registryRemove(RegistryParam registryParam);
 
+
+    // ---------------------- biz (custome) ----------------------
+    // group、job ... manage
 }

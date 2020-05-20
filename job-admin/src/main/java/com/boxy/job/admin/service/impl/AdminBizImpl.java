@@ -63,7 +63,7 @@ public class AdminBizImpl implements AdminBiz {
         String callbackMsg = null;
         if (IJobHandler.SUCCESS.getCode() == handleCallbackParam.getExecuteResult().getCode()) {
             JobInfo jobInfo = jobInfoDao.loadById(log.getJobId());
-            if (jobInfo !=null && jobInfo.getChildJobId()!=null && jobInfo.getChildJobId().trim().length()>0) {
+            if (jobInfo!=null && jobInfo.getChildJobId()!=null && jobInfo.getChildJobId().trim().length()>0) {
                 callbackMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";
 
                 String[] childJobIds = jobInfo.getChildJobId().split(",");
@@ -71,7 +71,7 @@ public class AdminBizImpl implements AdminBiz {
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
                     if (childJobId > 0) {
 
-                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null);
+                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
                         // add msg
@@ -102,6 +102,10 @@ public class AdminBizImpl implements AdminBiz {
         }
         if (callbackMsg != null) {
             handleMsg.append(callbackMsg);
+        }
+
+        if (handleMsg.length() > 15000) {
+            handleMsg = new StringBuffer(handleMsg.substring(0, 15000));  // text最大64kb 避免长度过长
         }
 
         // success, save log
@@ -164,5 +168,4 @@ public class AdminBizImpl implements AdminBiz {
     private void freshGroupRegistryInfo(RegistryParam registryParam){
         // Under consideration, prevent affecting core tables
     }
-
 }

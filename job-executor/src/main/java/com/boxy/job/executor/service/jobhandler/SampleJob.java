@@ -11,14 +11,16 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Job开发示例（Bean模式）
- *
+ * <p>
  * 开发步骤：
  * 1、在Spring Bean实例中，开发Job方法，方式格式要求为 "public ReturnT<String> execute(String param)"
  * 2、为Job方法添加注解 "@Job(value="自定义jobhandler名称", init = "JobHandler初始化方法", destroy = "JobHandler销毁方法")"，注解value值对应的是调度中心新建任务的JobHandler属性的值。
@@ -102,27 +104,62 @@ public class SampleJob {
         if (exitValue == 0) {
             return IJobHandler.SUCCESS;
         } else {
-            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "command exit value("+exitValue+") is failed");
+            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "command exit value(" + exitValue + ") is failed");
         }
     }
 
 
     /**
      * 4、跨平台Http任务
+     * 参数示例：
+     * "url: http://www.baidu.com\n" +
+     * "method: get\n" +
+     * "data: content\n";
      */
     @Job("httpJobHandler")
     public ReturnT<String> httpJobHandler(String param) throws Exception {
+
+        // param parse
+        if (param == null || param.trim().length() == 0) {
+            JobLogger.log("param[" + param + "] invalid.");
+            return ReturnT.FAIL;
+        }
+        String[] httpParams = param.split("\n");
+        String url = null;
+        String method = null;
+        String data = null;
+        for (String httpParam : httpParams) {
+            if (httpParam.startsWith("url:")) {
+                url = httpParam.substring(httpParam.indexOf("url:") + 4).trim();
+            }
+            if (httpParam.startsWith("method:")) {
+                method = httpParam.substring(httpParam.indexOf("method:") + 7).trim().toUpperCase();
+            }
+            if (httpParam.startsWith("data:")) {
+                data = httpParam.substring(httpParam.indexOf("data:") + 5).trim();
+            }
+        }
+
+        // param valid
+        if (url == null || url.trim().length() == 0) {
+            JobLogger.log("url[" + url + "] invalid.");
+            return ReturnT.FAIL;
+        }
+        if (method == null || !Arrays.asList("GET", "POST").contains(method)) {
+            JobLogger.log("method[" + method + "] invalid.");
+            return ReturnT.FAIL;
+        }
 
         // request
         HttpURLConnection connection = null;
         BufferedReader bufferedReader = null;
         try {
             // connection
-            URL realUrl = new URL(param);
+            URL realUrl = new URL(url);
             connection = (HttpURLConnection) realUrl.openConnection();
 
             // connection setting
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(method);
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setUseCaches(false);
@@ -135,7 +172,13 @@ public class SampleJob {
             // do connection
             connection.connect();
 
-            //Map<String, List<String>> map = connection.getHeaderFields();
+            // data
+            if (data != null && data.trim().length() > 0) {
+                DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
+                dataOutputStream.write(data.getBytes("UTF-8"));
+                dataOutputStream.flush();
+                dataOutputStream.close();
+            }
 
             // valid StatusCode
             int statusCode = connection.getResponseCode();
@@ -169,7 +212,6 @@ public class SampleJob {
                 JobLogger.log(e2);
             }
         }
-
     }
 
     /**
@@ -180,10 +222,12 @@ public class SampleJob {
         JobLogger.log("JOB, Hello World.");
         return ReturnT.SUCCESS;
     }
-    public void init(){
+
+    public void init() {
         logger.info("init");
     }
-    public void destroy(){
+
+    public void destroy() {
         logger.info("destory");
     }
 }

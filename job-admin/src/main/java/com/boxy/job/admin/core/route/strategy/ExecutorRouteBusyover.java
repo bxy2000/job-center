@@ -4,6 +4,7 @@ import com.boxy.job.admin.core.scheduler.JobScheduler;
 import com.boxy.job.admin.core.route.ExecutorRouter;
 import com.boxy.job.admin.core.util.I18nUtil;
 import com.boxy.job.core.biz.ExecutorBiz;
+import com.boxy.job.core.biz.model.IdleBeatParam;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.biz.model.TriggerParam;
 
@@ -19,7 +20,7 @@ public class ExecutorRouteBusyover extends ExecutorRouter {
             ReturnT<String> idleBeatResult = null;
             try {
                 ExecutorBiz executorBiz = JobScheduler.getExecutorBiz(address);
-                idleBeatResult = executorBiz.idleBeat(triggerParam.getJobId());
+                idleBeatResult = executorBiz.idleBeat(new IdleBeatParam(triggerParam.getJobId()));
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 idleBeatResult = new ReturnT<String>(ReturnT.FAIL_CODE, ""+e );
