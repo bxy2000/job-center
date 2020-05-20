@@ -7,12 +7,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="job-rpc" />
         <module name="job-admin" />
         <module name="job-executor" />
-        <module name="job-registry" />
         <module name="job-core" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="job-registry" target="1.8" />
+      <module name="job-rpc" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
