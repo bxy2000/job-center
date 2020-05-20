@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>job-admin</artifactId>
+    <packaging>jar</packaging>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -70,7 +72,7 @@
         <dependency>
             <groupId>com.boxy</groupId>
             <artifactId>job-core</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
     </dependencies>
@@ -89,6 +91,25 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- docker -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <!-- made of '[a-z0-9-_.]' -->
+                    <imageName>${project.artifactId}:${project.version}</imageName>
+                    <dockerDirectory>${project.basedir}</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>

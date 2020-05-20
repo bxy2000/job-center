@@ -10,7 +10,7 @@ import com.boxy.job.core.thread.ExecutorRegistryThread;
 import com.boxy.job.core.thread.JobLogFileCleanThread;
 import com.boxy.job.core.thread.JobThread;
 import com.boxy.job.core.thread.TriggerCallbackThread;
-import com.boxy.job.rpc.registry.ServiceRegistry;
+import com.boxy.job.rpc.registry.Register;
 import com.boxy.job.rpc.remoting.net.impl.netty_http.server.NettyHttpServer;
 import com.boxy.job.rpc.remoting.provider.RpcProviderFactory;
 import com.boxy.job.rpc.serialize.Serializer;
@@ -149,7 +149,7 @@ public class JobExecutor {
         rpcProviderFactory.setIp(ip);
         rpcProviderFactory.setPort(port);
         rpcProviderFactory.setAccessToken(accessToken);
-        rpcProviderFactory.setServiceRegistry(ExecutorServiceRegistry.class);
+        rpcProviderFactory.setServiceRegistry(ExecutorRegister.class);
         rpcProviderFactory.setServiceRegistryParam(serviceRegistryParam);
 
         // add services
@@ -160,7 +160,7 @@ public class JobExecutor {
 
     }
 
-    public static class ExecutorServiceRegistry extends ServiceRegistry {
+    public static class ExecutorRegister extends Register {
 
         @Override
         public void start(Map<String, String> param) {

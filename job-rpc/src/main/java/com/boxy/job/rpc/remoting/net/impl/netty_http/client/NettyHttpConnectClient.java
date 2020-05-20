@@ -1,6 +1,7 @@
 package com.boxy.job.rpc.remoting.net.impl.netty_http.client;
 
 import com.boxy.job.rpc.remoting.invoker.RpcInvokerFactory;
+import com.boxy.job.rpc.remoting.net.params.BaseCallback;
 import com.boxy.job.rpc.serialize.Serializer;
 import com.boxy.job.rpc.remoting.net.common.ConnectClient;
 import com.boxy.job.rpc.remoting.net.params.Beat;
@@ -22,19 +23,17 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class NettyHttpConnectClient extends ConnectClient {
+    private static NioEventLoopGroup nioEventLoopGroup;
 
-    private EventLoopGroup group;
     private Channel channel;
 
     private Serializer serializer;
     private String address;
     private String host;
-    private DefaultFullHttpRequest beatRequest;
 
     @Override
     public void init(String address, final Serializer serializer, final RpcInvokerFactory rpcInvokerFactory) throws Exception {
-        final NettyHttpConnectClient thisClient = this;
-
+        // address
         if (!address.toLowerCase().startsWith("http")) {
             address = "http://" + address;	// IP:PORT, need parse to url
         }
@@ -44,10 +43,25 @@ public class NettyHttpConnectClient extends ConnectClient {
         this.host = url.getHost();
         int port = url.getPort()>-1?url.getPort():80;
 
+        // group
+        if (nioEventLoopGroup == null) {
+            synchronized (NettyHttpConnectClient.class) {
+                if (nioEventLoopGroup == null) {
+                    nioEventLoopGroup = new NioEventLoopGroup();
+                    rpcInvokerFactory.addStopCallBack(new BaseCallback() {
+                        @Override
+                        public void run() throws Exception {
+                            nioEventLoopGroup.shutdownGracefully();
+                        }
+                    });
+                }
+            }
+        }
 
-        this.group = new NioEventLoopGroup();
+        // init
+        final NettyHttpConnectClient thisClient = this;
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(group)
+        bootstrap.group(nioEventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -70,7 +84,6 @@ public class NettyHttpConnectClient extends ConnectClient {
             close();
             return;
         }
-
         logger.debug(" job-rpc netty client proxy, connect to server success at host:{}, port:{}", host, port);
     }
 
@@ -88,9 +101,7 @@ public class NettyHttpConnectClient extends ConnectClient {
         if (this.channel!=null && this.channel.isActive()) {
             this.channel.close();		// if this.channel.isOpen()
         }
-        if (this.group!=null && !this.group.isShutdown()) {
-            this.group.shutdownGracefully();
-        }
+
         logger.debug(" job-rpc netty client close.");
     }
 

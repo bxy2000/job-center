@@ -13,7 +13,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JobRegistryDaoTest {
+public class JobRegisterDaoTest {
 
     @Resource
     private JobRegistryDao jobRegistryDao;

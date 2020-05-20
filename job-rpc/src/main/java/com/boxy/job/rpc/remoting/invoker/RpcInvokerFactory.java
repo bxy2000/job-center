@@ -1,7 +1,7 @@
 package com.boxy.job.rpc.remoting.invoker;
 
-import com.boxy.job.rpc.registry.ServiceRegistry;
-import com.boxy.job.rpc.registry.impl.LocalServiceRegistry;
+import com.boxy.job.rpc.registry.Register;
+import com.boxy.job.rpc.registry.impl.LocalRegister;
 import com.boxy.job.rpc.remoting.net.params.BaseCallback;
 import com.boxy.job.rpc.remoting.net.params.RpcFutureResponse;
 import com.boxy.job.rpc.remoting.net.params.RpcResponse;
@@ -19,7 +19,7 @@ public class RpcInvokerFactory {
 
     // ---------------------- default instance ----------------------
 
-    private static volatile RpcInvokerFactory instance = new RpcInvokerFactory(LocalServiceRegistry.class, null);
+    private static volatile RpcInvokerFactory instance = new RpcInvokerFactory(LocalRegister.class, null);
     public static RpcInvokerFactory getInstance() {
         return instance;
     }
@@ -27,13 +27,13 @@ public class RpcInvokerFactory {
 
     // ---------------------- config ----------------------
 
-    private Class<? extends ServiceRegistry> serviceRegistryClass;          // class.forname
+    private Class<? extends Register> serviceRegistryClass;          // class.forname
     private Map<String, String> serviceRegistryParam;
 
 
     public RpcInvokerFactory() {
     }
-    public RpcInvokerFactory(Class<? extends ServiceRegistry> serviceRegistryClass, Map<String, String> serviceRegistryParam) {
+    public RpcInvokerFactory(Class<? extends Register> serviceRegistryClass, Map<String, String> serviceRegistryParam) {
         this.serviceRegistryClass = serviceRegistryClass;
         this.serviceRegistryParam = serviceRegistryParam;
     }
@@ -44,15 +44,15 @@ public class RpcInvokerFactory {
     public void start() throws Exception {
         // start registry
         if (serviceRegistryClass != null) {
-            serviceRegistry = serviceRegistryClass.newInstance();
-            serviceRegistry.start(serviceRegistryParam);
+            register = serviceRegistryClass.newInstance();
+            register.start(serviceRegistryParam);
         }
     }
 
     public void  stop() throws Exception {
         // stop registry
-        if (serviceRegistry != null) {
-            serviceRegistry.stop();
+        if (register != null) {
+            register.stop();
         }
 
         // stop callback
@@ -73,9 +73,9 @@ public class RpcInvokerFactory {
 
     // ---------------------- service registry ----------------------
 
-    private ServiceRegistry serviceRegistry;
-    public ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
+    private Register register;
+    public Register getRegister() {
+        return register;
     }
 
 

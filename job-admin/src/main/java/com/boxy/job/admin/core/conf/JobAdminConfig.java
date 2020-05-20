@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 @Component
 public class JobAdminConfig implements InitializingBean, DisposableBean {
@@ -79,6 +80,9 @@ public class JobAdminConfig implements InitializingBean, DisposableBean {
 
 
     public String getI18n() {
+        if (!Arrays.asList("zh_CN", "zh_TC", "en").contains(i18n)) {
+            return "zh_CN";
+        }
         return i18n;
     }
 

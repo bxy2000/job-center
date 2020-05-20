@@ -4,7 +4,7 @@ import com.boxy.job.rpc.remoting.net.params.RpcResponse;
 import com.boxy.job.rpc.util.IpUtil;
 import com.boxy.job.rpc.util.NetUtil;
 import com.boxy.job.rpc.util.ThrowableUtil;
-import com.boxy.job.rpc.registry.ServiceRegistry;
+import com.boxy.job.rpc.registry.Register;
 import com.boxy.job.rpc.remoting.net.Server;
 import com.boxy.job.rpc.remoting.net.impl.netty.server.NettyServer;
 import com.boxy.job.rpc.remoting.net.params.BaseCallback;
@@ -31,9 +31,10 @@ public class RpcProviderFactory {
 
 	private String ip = null;					// for registry
 	private int port = 7080;					// default port
+	private String registryAddress;				// default use registryAddress to registry , otherwise use ip:port if registryAddress is null
 	private String accessToken = null;
 
-	private Class<? extends ServiceRegistry> serviceRegistry = null;
+	private Class<? extends Register> serviceRegistry = null;
 	private Map<String, String> serviceRegistryParam = null;
 
 	// set
@@ -55,11 +56,14 @@ public class RpcProviderFactory {
 	public void setPort(int port) {
 		this.port = port;
 	}
+	public void setRegistryAddress(String registryAddress) {
+		this.registryAddress = registryAddress;
+	}
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
-	public void setServiceRegistry(Class<? extends ServiceRegistry> serviceRegistry) {
+	public void setServiceRegistry(Class<? extends Register> serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
 
@@ -85,8 +89,8 @@ public class RpcProviderFactory {
 
 	private Server serverInstance;
 	private Serializer serializerInstance;
-	private ServiceRegistry serviceRegistryInstance;
-	private String serviceAddress;
+	private Register registerInstance;
+	// private String serviceAddress;
 
 	public void start() throws Exception {
 
@@ -107,6 +111,9 @@ public class RpcProviderFactory {
 		if (this.port <= 0) {
 			this.port = 7080;
 		}
+		if (this.registryAddress==null || this.registryAddress.trim().length()==0) {
+			this.registryAddress = IpUtil.getIpPort(this.ip, this.port);
+		}
 		if (NetUtil.isPortUsed(this.port)) {
 			throw new RpcException("job-rpc provider port["+ this.port +"] is used.");
 		}
@@ -115,17 +122,17 @@ public class RpcProviderFactory {
 		this.serializerInstance = serializer.newInstance();
 
 		// start server
-		serviceAddress = IpUtil.getIpPort(this.ip, port);
+		// serviceAddress = IpUtil.getIpPort(this.ip, port);
 		serverInstance = server.newInstance();
 		serverInstance.setStartedCallback(new BaseCallback() {		// serviceRegistry started
 			@Override
 			public void run() throws Exception {
 				// start registry
 				if (serviceRegistry != null) {
-					serviceRegistryInstance = serviceRegistry.newInstance();
-					serviceRegistryInstance.start(serviceRegistryParam);
+					registerInstance = serviceRegistry.newInstance();
+					registerInstance.start(serviceRegistryParam);
 					if (serviceData.size() > 0) {
-						serviceRegistryInstance.registry(serviceData.keySet(), serviceAddress);
+						registerInstance.registry(serviceData.keySet(), registryAddress);
 					}
 				}
 			}
@@ -134,12 +141,12 @@ public class RpcProviderFactory {
 			@Override
 			public void run() {
 				// stop registry
-				if (serviceRegistryInstance != null) {
+				if (registerInstance != null) {
 					if (serviceData.size() > 0) {
-						serviceRegistryInstance.remove(serviceData.keySet(), serviceAddress);
+						registerInstance.remove(serviceData.keySet(), registryAddress);
 					}
-					serviceRegistryInstance.stop();
-					serviceRegistryInstance = null;
+					registerInstance.stop();
+					registerInstance = null;
 				}
 			}
 		});

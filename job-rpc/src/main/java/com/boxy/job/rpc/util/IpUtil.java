@@ -11,6 +11,11 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
+/**
+ * ip tool
+ *
+ * @author xuxueli 2016-5-22 11:38:05
+ */
 public class IpUtil {
     private static final Logger logger = LoggerFactory.getLogger(IpUtil.class);
 
@@ -18,9 +23,12 @@ public class IpUtil {
     private static final String LOCALHOST_VALUE = "127.0.0.1";
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
+
+
     private static volatile InetAddress LOCAL_ADDRESS = null;
 
     // ---------------------- valid ----------------------
+
     private static InetAddress toValidAddress(InetAddress address) {
         if (address instanceof Inet6Address) {
             Inet6Address v6Address = (Inet6Address) address;
@@ -56,6 +64,7 @@ public class IpUtil {
         return result;
     }
 
+
     /**
      * normalize the ipv6 Address, convert scope name to scope id.
      * e.g.
@@ -85,6 +94,8 @@ public class IpUtil {
     }
 
     // ---------------------- find ip ----------------------
+
+
     private static InetAddress getLocalAddress0() {
         InetAddress localAddress = null;
         try {

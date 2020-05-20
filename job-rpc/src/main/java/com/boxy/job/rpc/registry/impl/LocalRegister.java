@@ -1,13 +1,13 @@
 package com.boxy.job.rpc.registry.impl;
 
-import com.boxy.job.rpc.registry.ServiceRegistry;
+import com.boxy.job.rpc.registry.Register;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class LocalServiceRegistry extends ServiceRegistry {
+public class LocalRegister extends Register {
     private Map<String, TreeSet<String>> registryData;
 
     @Override

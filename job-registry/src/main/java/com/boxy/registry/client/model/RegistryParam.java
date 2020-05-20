@@ -9,8 +9,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor@AllArgsConstructor
 public class RegistryParam {
     private String accessToken;
     private String biz;

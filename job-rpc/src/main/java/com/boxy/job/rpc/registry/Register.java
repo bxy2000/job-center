@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public abstract class ServiceRegistry {
+public abstract class Register {
     public abstract void start(Map<String, String> param);
 
     public abstract void stop();

@@ -141,7 +141,7 @@
                     <li class="nav-click <#if pageName == "jobgroup">active</#if>" ><a href="${request.contextPath}/jobgroup"><i class="fa fa-circle-o text-red"></i><span>${I18n.jobgroup_name}</span></a></li>
                     <li class="nav-click <#if pageName == "user">active</#if>" ><a href="${request.contextPath}/user"><i class="fa fa-circle-o text-purple"></i><span>${I18n.user_manage}</span></a></li>
 				</#if>
-				<li class="nav-click <#if pageName == "help">active</#if>" ><a href="${request.contextPath}/help"><i class="fa fa-circle-o text-gray"></i><span>${I18n.job_help}</span></a></li>
+				<!--<li class="nav-click <#if pageName == "help">active</#if>" ><a href="${request.contextPath}/help"><i class="fa fa-circle-o text-gray"></i><span>${I18n.job_help}</span></a></li> -->
 			</ul>
 		</section>
 		<!-- /.sidebar -->
@@ -227,10 +227,12 @@
 
 <#macro commonFooter >
 	<footer class="main-footer">
-        Powered by <b>JOB-CENTER</b> ${I18n.admin_version}
+        <!-- 软件版本 <b>JOB-CENTER</b> ${I18n.admin_version} -->
+		&nbsp;
 		<div class="pull-right hidden-xs">
-            <strong>Copyright &copy; 2015-${.now?string('yyyy')} &nbsp;
-                <a href="https://www.gilight.com/" target="_blank" >gilight</a>
+            <strong>
+				<a href="http://www.gilight.cn/" target="_blank">精华教育科技股份有限公司</a> 版权所有
+<#--				2015-${.now?string('yyyy')} &nbsp;-->
             </strong>
 		</div>
 	</footer>

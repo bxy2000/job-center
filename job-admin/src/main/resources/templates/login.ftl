@@ -9,11 +9,11 @@
 <body class="hold-transition login-page">
 	<div class="login-box">
 		<div class="login-logo">
-			<a><b>任务调度</b>中心</a>
+			<a><b>${I18n.admin_name}</b></a>
 		</div>
 		<form id="loginForm" method="post" >
 			<div class="login-box-body">
-				<p class="login-box-msg">${I18n.admin_name}</p>
+				<p class="login-box-msg">系统登录</p>
 				<div class="form-group has-feedback">
 	            	<input type="text" name="userName" class="form-control" placeholder="${I18n.login_username_placeholder}"  maxlength="18" >
 	            	<span class="glyphicon glyphicon-envelope form-control-feedback"></span>

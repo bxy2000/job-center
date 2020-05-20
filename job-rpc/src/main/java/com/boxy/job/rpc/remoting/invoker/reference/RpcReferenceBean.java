@@ -191,10 +191,10 @@ public class RpcReferenceBean {
 						// address
 						String finalAddress = address;
 						if (finalAddress==null || finalAddress.trim().length()==0) {
-							if (invokerFactory!=null && invokerFactory.getServiceRegistry()!=null) {
+							if (invokerFactory!=null && invokerFactory.getRegister()!=null) {
 								// discovery
 								String serviceKey = RpcProviderFactory.makeServiceKey(className, varsion_);
-								TreeSet<String> addressSet = invokerFactory.getServiceRegistry().discovery(serviceKey);
+								TreeSet<String> addressSet = invokerFactory.getRegister().discovery(serviceKey);
 								// load balance
 								if (addressSet==null || addressSet.size()==0) {
 									// pass

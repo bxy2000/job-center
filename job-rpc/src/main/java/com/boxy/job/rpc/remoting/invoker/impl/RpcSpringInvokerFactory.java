@@ -1,6 +1,6 @@
 package com.boxy.job.rpc.remoting.invoker.impl;
 
-import com.boxy.job.rpc.registry.ServiceRegistry;
+import com.boxy.job.rpc.registry.Register;
 import com.boxy.job.rpc.remoting.invoker.RpcInvokerFactory;
 import com.boxy.job.rpc.remoting.invoker.annotation.RpcReference;
 import com.boxy.job.rpc.remoting.invoker.reference.RpcReferenceBean;
@@ -25,11 +25,11 @@ public class RpcSpringInvokerFactory extends InstantiationAwareBeanPostProcessor
     private Logger logger = LoggerFactory.getLogger(RpcSpringInvokerFactory.class);
 
     // ---------------------- config ----------------------
-    private Class<? extends ServiceRegistry> serviceRegistryClass;          // class.forname
+    private Class<? extends Register> serviceRegistryClass;          // class.forname
     private Map<String, String> serviceRegistryParam;
 
 
-    public void setServiceRegistryClass(Class<? extends ServiceRegistry> serviceRegistryClass) {
+    public void setServiceRegistryClass(Class<? extends Register> serviceRegistryClass) {
         this.serviceRegistryClass = serviceRegistryClass;
     }
 
@@ -107,9 +107,9 @@ public class RpcSpringInvokerFactory extends InstantiationAwareBeanPostProcessor
         });
 
         // mult discovery
-        if (rpcInvokerFactory.getServiceRegistry() != null) {
+        if (rpcInvokerFactory.getRegister() != null) {
             try {
-                rpcInvokerFactory.getServiceRegistry().discovery(serviceKeyList);
+                rpcInvokerFactory.getRegister().discovery(serviceKeyList);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
