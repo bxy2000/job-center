@@ -20,11 +20,11 @@ public class ExecutorRegistryThread {
 
     private Thread registryThread;
     private volatile boolean toStop = false;
-    public void start(final String appName, final String address){
+    public void start(final String appname, final String address){
 
         // valid
-        if (appName==null || appName.trim().length()==0) {
-            logger.warn(">>>>>>>>>>> job, executor registry config fail, appName is null.");
+        if (appname==null || appname.trim().length()==0) {
+            logger.warn(">>>>>>>>>>> job, executor registry config fail, appname is null.");
             return;
         }
         if (JobExecutor.getAdminBizList() == null) {
@@ -39,7 +39,7 @@ public class ExecutorRegistryThread {
                 // registry
                 while (!toStop) {
                     try {
-                        RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appName, address);
+                        RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                         for (AdminBiz adminBiz: JobExecutor.getAdminBizList()) {
                             try {
                                 ReturnT<String> registryResult = adminBiz.registry(registryParam);
@@ -75,7 +75,7 @@ public class ExecutorRegistryThread {
 
                 // registry remove
                 try {
-                    RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appName, address);
+                    RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                     for (AdminBiz adminBiz: JobExecutor.getAdminBizList()) {
                         try {
                             ReturnT<String> registryResult = adminBiz.registryRemove(registryParam);

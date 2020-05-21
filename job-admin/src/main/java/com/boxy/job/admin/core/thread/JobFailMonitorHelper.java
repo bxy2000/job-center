@@ -3,20 +3,12 @@ package com.boxy.job.admin.core.thread;
 import com.boxy.job.admin.core.conf.JobAdminConfig;
 import com.boxy.job.admin.core.model.JobInfo;
 import com.boxy.job.admin.core.model.JobLog;
-import com.boxy.job.admin.core.model.JobGroup;
 import com.boxy.job.admin.core.trigger.TriggerTypeEnum;
 import com.boxy.job.admin.core.util.I18nUtil;
-import com.boxy.job.core.biz.model.ReturnT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.internet.MimeMessage;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class JobFailMonitorHelper {

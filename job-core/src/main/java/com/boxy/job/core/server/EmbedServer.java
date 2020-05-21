@@ -48,13 +48,13 @@ public class EmbedServer {
                         new ThreadFactory() {
                             @Override
                             public Thread newThread(Runnable r) {
-                                return new Thread(r, "xxl-rpc, EmbedServer bizThreadPool-" + r.hashCode());
+                                return new Thread(r, "rpc, EmbedServer bizThreadPool-" + r.hashCode());
                             }
                         },
                         new RejectedExecutionHandler() {
                             @Override
                             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                                throw new RuntimeException("xxl-job, EmbedServer bizThreadPool is EXHAUSTED!");
+                                throw new RuntimeException("job, EmbedServer bizThreadPool is EXHAUSTED!");
                             }
                         });
 
@@ -79,7 +79,7 @@ public class EmbedServer {
                     // bind
                     ChannelFuture future = bootstrap.bind(port).sync();
 
-                    logger.info(">>>>>>>>>>> xxl-job remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
+                    logger.info(">>>>>>>>>>> job remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
 
                     // start registry
                     startRegistry(appname, address);
@@ -89,9 +89,9 @@ public class EmbedServer {
 
                 } catch (InterruptedException e) {
                     if (e instanceof InterruptedException) {
-                        logger.info(">>>>>>>>>>> xxl-job remoting server stop.");
+                        logger.info(">>>>>>>>>>> job remoting server stop.");
                     } else {
-                        logger.error(">>>>>>>>>>> xxl-job remoting server error.", e);
+                        logger.error(">>>>>>>>>>> job remoting server error.", e);
                     }
                 } finally {
                     // stop
@@ -118,7 +118,7 @@ public class EmbedServer {
 
         // stop registry
         stopRegistry();
-        logger.info(">>>>>>>>>>> xxl-job remoting server destroy success.");
+        logger.info(">>>>>>>>>>> job remoting server destroy success.");
     }
 
 
@@ -127,7 +127,7 @@ public class EmbedServer {
     /**
      * netty_http
      *
-     * Copy from : https://github.com/xuxueli/xxl-rpc
+     * Copy from : https://github.com/xuxueli/rpc
      *
      * @author xuxueli 2015-11-24 22:25:15
      */
@@ -231,7 +231,7 @@ public class EmbedServer {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-            logger.error(">>>>>>>>>>> xxl-job provider netty_http server caught exception", cause);
+            logger.error(">>>>>>>>>>> job provider netty_http server caught exception", cause);
             ctx.close();
         }
 
@@ -239,7 +239,7 @@ public class EmbedServer {
         public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
             if (evt instanceof IdleStateEvent) {
                 ctx.channel().close();      // beat 3N, close if idle
-                logger.debug(">>>>>>>>>>> xxl-job provider netty_http server close an idle channel.");
+                logger.debug(">>>>>>>>>>> job provider netty_http server close an idle channel.");
             } else {
                 super.userEventTriggered(ctx, evt);
             }

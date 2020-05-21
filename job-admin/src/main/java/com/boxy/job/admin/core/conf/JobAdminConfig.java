@@ -43,22 +43,22 @@ public class JobAdminConfig implements InitializingBean, DisposableBean {
     // ---------------------- JobScheduler ----------------------
 
     // conf
-    @Value("${xxl.job.i18n}")
+    @Value("${job.i18n}")
     private String i18n;
 
-    @Value("${xxl.job.accessToken}")
+    @Value("${job.accessToken}")
     private String accessToken;
 
     @Value("${spring.mail.username}")
     private String emailUserName;
 
-    @Value("${xxl.job.triggerpool.fast.max}")
+    @Value("${job.triggerpool.fast.max}")
     private int triggerPoolFastMax;
 
-    @Value("${xxl.job.triggerpool.slow.max}")
+    @Value("${job.triggerpool.slow.max}")
     private int triggerPoolSlowMax;
 
-    @Value("${xxl.job.logretentiondays}")
+    @Value("${job.logretentiondays}")
     private int logretentiondays;
 
     // dao, service

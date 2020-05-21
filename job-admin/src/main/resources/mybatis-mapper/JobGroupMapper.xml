@@ -29,12 +29,12 @@
 		SELECT <include refid="Base_Column_List" />
 		FROM job_group AS t
 		WHERE t.address_type = #{addressType}
-		ORDER t.app_name, t.title, t.id ASC
+		ORDER BY t.app_name, t.title, t.id ASC
 	</select>
 
 	<insert id="save" parameterType="com.boxy.job.admin.core.model.JobGroup" useGeneratedKeys="true" keyProperty="id" >
-		INSERT INTO job_group ( `app_name`, `title`, `order`, `address_type`, `address_list`)
-		values ( #{appname}, #{title}, #{order}, #{addressType}, #{addressList});
+		INSERT INTO job_group ( `app_name`, `title`, `address_type`, `address_list`)
+		values ( #{appname}, #{title}, #{addressType}, #{addressList});
 	</insert>
 
 	<update id="update" parameterType="com.boxy.job.admin.core.model.JobGroup" >
