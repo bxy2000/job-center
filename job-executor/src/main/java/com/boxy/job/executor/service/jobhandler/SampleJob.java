@@ -1,10 +1,10 @@
 package com.boxy.job.executor.service.jobhandler;
 
 import com.boxy.job.core.biz.model.ReturnT;
+import com.boxy.job.core.context.JobContext;
 import com.boxy.job.core.handler.IJobHandler;
 import com.boxy.job.core.handler.annotation.Job;
 import com.boxy.job.core.log.JobLogger;
-import com.boxy.job.core.util.ShardingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -53,12 +53,14 @@ public class SampleJob {
     public ReturnT<String> shardingJobHandler(String param) throws Exception {
 
         // 分片参数
-        ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
-        JobLogger.log("分片参数：当前分片序号 = {}, 总分片数 = {}", shardingVO.getIndex(), shardingVO.getTotal());
+        int shardIndex = JobContext.getJobContext().getShardIndex();
+        int shardTotal = JobContext.getJobContext().getShardTotal();
+
+        JobLogger.log("分片参数：当前分片序号 = {}, 总分片数 = {}", shardIndex, shardTotal);
 
         // 业务逻辑
-        for (int i = 0; i < shardingVO.getTotal(); i++) {
-            if (i == shardingVO.getIndex()) {
+        for (int i = 0; i < shardTotal; i++) {
+            if (i == shardIndex) {
                 JobLogger.log("第 {} 片, 命中分片开始处理", i);
             } else {
                 JobLogger.log("第 {} 片, 忽略", i);
@@ -80,9 +82,15 @@ public class SampleJob {
         BufferedReader bufferedReader = null;
         try {
             // command process
-            Process process = Runtime.getRuntime().exec(command);
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.command(command);
+            processBuilder.redirectErrorStream(true);
+
+            Process process = processBuilder.start();
+            //Process process = Runtime.getRuntime().exec(command);
+
             BufferedInputStream bufferedInputStream = new BufferedInputStream(process.getInputStream());
-            bufferedReader = new BufferedReader(new InputStreamReader(bufferedInputStream));
+            bufferedReader = new BufferedReader(new InputStreamReader(bufferedInputStream, "UTF-8"));
 
             // command log
             String line;
@@ -150,6 +158,8 @@ public class SampleJob {
             return ReturnT.FAIL;
         }
 
+        boolean isPostMethod = method.equals("POST");
+
         // request
         HttpURLConnection connection = null;
         BufferedReader bufferedReader = null;
@@ -160,7 +170,7 @@ public class SampleJob {
 
             // connection setting
             connection.setRequestMethod(method);
-            connection.setDoOutput(true);
+            connection.setDoOutput(isPostMethod);
             connection.setDoInput(true);
             connection.setUseCaches(false);
             connection.setReadTimeout(5 * 1000);
@@ -173,7 +183,7 @@ public class SampleJob {
             connection.connect();
 
             // data
-            if (data != null && data.trim().length() > 0) {
+            if (isPostMethod && data != null && data.trim().length() > 0) {
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.write(data.getBytes("UTF-8"));
                 dataOutputStream.flush();

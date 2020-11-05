@@ -10,11 +10,19 @@
         <module name="job-admin" />
         <module name="job-executor" />
         <module name="job-core" />
+        <module name="job-kettle-executor" />
+        <module name="job-executor-kettle" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="job-kettle-executor" target="1.8" />
       <module name="job-registry" target="1.8" />
       <module name="job-rpc" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="job-executor-kettle" options="-extdirs C:\bxy\production\job-center\job-executor-kettle/lib" />
+    </option>
   </component>
 </project>

@@ -1,5 +1,6 @@
 package com.boxy.job.core.log;
 
+import com.boxy.job.core.context.JobContext;
 import com.boxy.job.core.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ public class JobLogger {
         String formatAppendLog = stringBuffer.toString();
 
         // appendlog
-        String logFileName = JobFileAppender.contextHolder.get();
+        String logFileName = JobContext.getJobContext().getJobLogFileName();
+
         if (logFileName!=null && logFileName.trim().length()>0) {
             JobFileAppender.appendLog(logFileName, formatAppendLog);
         } else {

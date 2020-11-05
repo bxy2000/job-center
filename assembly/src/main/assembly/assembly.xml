@@ -21,10 +21,17 @@
         </fileSet>
         <fileSet>
             <directory>
+                ${project.parent.basedir}\lib
+            </directory>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>
                 ${project.parent.basedir}\doc
             </directory>
             <outputDirectory>doc</outputDirectory>
         </fileSet>
+
         <fileSet>
             <directory>
                 ${project.parent.basedir}\job-admin\src\main\resources
@@ -43,6 +50,7 @@
                 <include>job-admin.jar</include>
             </includes>
         </fileSet>
+
         <fileSet>
             <directory>
                 ${project.parent.basedir}\job-executor\src\main\resources
@@ -59,6 +67,25 @@
             <outputDirectory>bin\job-executor</outputDirectory>
             <includes>
                 <include>job-executor.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}\job-executor-kettle\src\main\resources
+            </directory>
+            <outputDirectory>bin\job-executor-kettle</outputDirectory>
+            <includes>
+                <include>application.properties</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}\job-executor-kettle\target
+            </directory>
+            <outputDirectory>bin\job-executor-kettle</outputDirectory>
+            <includes>
+                <include>job-executor-kettle.jar</include>
             </includes>
         </fileSet>
     </fileSets>

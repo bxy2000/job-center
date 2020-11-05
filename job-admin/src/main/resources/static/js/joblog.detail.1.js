@@ -87,5 +87,4 @@ $(function() {
         logRun = window.clearInterval(logRun);
         $('#logConsole').append(content);
     }
-
 });

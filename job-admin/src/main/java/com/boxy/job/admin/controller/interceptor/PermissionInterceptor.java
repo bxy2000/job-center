@@ -23,7 +23,7 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		
+
 		if (!(handler instanceof HandlerMethod)) {
 			return super.preHandle(request, response, handler);
 		}
@@ -41,8 +41,8 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 		if (needLogin) {
 			JobUser loginUser = loginService.ifLogin(request, response);
 			if (loginUser == null) {
-				response.sendRedirect(request.getContextPath() + "/toLogin");
-				//request.getRequestDispatcher("/toLogin").forward(request, response);
+				response.setStatus(302);
+				response.setHeader("location", request.getContextPath()+"/toLogin");
 				return false;
 			}
 			if (needAdminuser && loginUser.getRole()!=1) {
@@ -53,5 +53,5 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 
 		return super.preHandle(request, response, handler);
 	}
-	
+
 }

@@ -1,12 +1,12 @@
 package com.boxy.job.core.handler.impl;
 
+import com.boxy.job.core.context.JobContext;
 import com.boxy.job.core.glue.GlueTypeEnum;
 import com.boxy.job.core.log.JobFileAppender;
 import com.boxy.job.core.log.JobLogger;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.handler.IJobHandler;
 import com.boxy.job.core.util.ScriptUtil;
-import com.boxy.job.core.util.ShardingUtil;
 
 import java.io.File;
 
@@ -65,14 +65,13 @@ public class ScriptJobHandler extends IJobHandler {
         }
 
         // log file
-        String logFileName = JobFileAppender.contextHolder.get();
+        String logFileName = JobContext.getJobContext().getJobLogFileName();
 
         // script params：0=param、1=分片序号、2=分片总数
-        ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
         String[] scriptParams = new String[3];
         scriptParams[0] = param;
-        scriptParams[1] = String.valueOf(shardingVO.getIndex());
-        scriptParams[2] = String.valueOf(shardingVO.getTotal());
+        scriptParams[1] = String.valueOf(JobContext.getJobContext().getShardIndex());
+        scriptParams[2] = String.valueOf(JobContext.getJobContext().getShardTotal());
 
         // invoke
         JobLogger.log("----------- script file:"+ scriptFileName +" -----------");

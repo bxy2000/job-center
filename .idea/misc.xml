@@ -12,6 +12,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/job-kettle-executor/pom.xml" />
         <option value="$PROJECT_DIR$/job-registry/pom.xml" />
         <option value="$PROJECT_DIR$/job-rpc/pom.xml" />
       </set>

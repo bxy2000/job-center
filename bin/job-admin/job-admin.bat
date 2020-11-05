@@ -9,5 +9,3 @@ if "%1" == "start" (
 ) else (
     echo please use "job-admin.bat start" or "job-admin.bat stop"
 )
-
-pause

@@ -55,7 +55,7 @@ public class EmailJobAlarm implements JobAlarm {
                     MimeMessage mimeMessage = JobAdminConfig.getAdminConfig().getMailSender().createMimeMessage();
 
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-                    helper.setFrom(JobAdminConfig.getAdminConfig().getEmailUserName(), personal);
+                    helper.setFrom(JobAdminConfig.getAdminConfig().getEmailFrom(), personal);
                     helper.setTo(email);
                     helper.setSubject(title);
                     helper.setText(content, true);

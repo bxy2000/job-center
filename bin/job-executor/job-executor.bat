@@ -10,4 +10,3 @@ if "%1" == "start" (
     echo please use "job-executor.bat start" or "job-executor.bat stop"
 )
 
-pause

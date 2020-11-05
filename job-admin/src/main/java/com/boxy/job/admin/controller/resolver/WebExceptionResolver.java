@@ -21,7 +21,7 @@ public class WebExceptionResolver implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex) {
+										 HttpServletResponse response, Object handler, Exception ex) {
 
 		if (!(ex instanceof JobException)) {
 			logger.error("WebExceptionResolver:{}", ex);
@@ -29,10 +29,12 @@ public class WebExceptionResolver implements HandlerExceptionResolver {
 
 		// if json
 		boolean isJson = false;
-		HandlerMethod method = (HandlerMethod)handler;
-		ResponseBody responseBody = method.getMethodAnnotation(ResponseBody.class);
-		if (responseBody != null) {
-			isJson = true;
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod method = (HandlerMethod)handler;
+			ResponseBody responseBody = method.getMethodAnnotation(ResponseBody.class);
+			if (responseBody != null) {
+				isJson = true;
+			}
 		}
 
 		// error result
@@ -55,5 +57,5 @@ public class WebExceptionResolver implements HandlerExceptionResolver {
 			return mv;
 		}
 	}
-	
+
 }

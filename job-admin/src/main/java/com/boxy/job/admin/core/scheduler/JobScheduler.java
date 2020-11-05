@@ -20,17 +20,17 @@ public class JobScheduler  {
         // init i18n
         initI18n();
 
+        // admin trigger pool start
+        JobTriggerPoolHelper.toStart();
+
         // admin registry monitor run
-        JobRegistryMonitorHelper.getInstance().start();
+        JobRegistryHelper.getInstance().start();
 
         // admin fail-monitor run
         JobFailMonitorHelper.getInstance().start();
 
-        // admin lose-monitor run
-        JobLosedMonitorHelper.getInstance().start();
-
-        // admin trigger pool start
-        JobTriggerPoolHelper.toStart();
+        // admin lose-monitor run ( depend on JobTriggerPoolHelper )
+        JobCompleteHelper.getInstance().start();
 
         // admin log report start
         JobLogReportHelper.getInstance().start();
@@ -50,17 +50,17 @@ public class JobScheduler  {
         // admin log report stop
         JobLogReportHelper.getInstance().toStop();
 
-        // admin trigger pool stop
-        JobTriggerPoolHelper.toStop();
-
         // admin lose-monitor stop
-        JobLosedMonitorHelper.getInstance().toStop();
+        JobCompleteHelper.getInstance().toStop();
 
         // admin fail-monitor stop
         JobFailMonitorHelper.getInstance().toStop();
 
         // admin registry stop
-        JobRegistryMonitorHelper.getInstance().toStop();
+        JobRegistryHelper.getInstance().toStop();
+
+        // admin trigger pool stop
+        JobTriggerPoolHelper.toStop();
 
     }
 

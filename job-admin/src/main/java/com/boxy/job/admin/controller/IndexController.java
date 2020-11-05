@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -44,16 +46,17 @@ public class IndexController {
         ReturnT<Map<String, Object>> chartInfo = jobService.chartInfo(startDate, endDate);
         return chartInfo;
     }
-	
+
 	@RequestMapping("/toLogin")
 	@PermissionLimit(limit=false)
-	public String toLogin(HttpServletRequest request, HttpServletResponse response) {
+	public ModelAndView toLogin(HttpServletRequest request, HttpServletResponse response, ModelAndView model) {
 		if (loginService.ifLogin(request, response) != null) {
-			return "redirect:/";
+			model.setView(new RedirectView("/",true,false));
+			return model;
 		}
-		return "login";
+		return new ModelAndView("login");
 	}
-	
+
 	@RequestMapping(value="login", method=RequestMethod.POST)
 	@ResponseBody
 	@PermissionLimit(limit=false)
@@ -61,14 +64,14 @@ public class IndexController {
 		boolean ifRem = (ifRemember!=null && ifRemember.trim().length()>0 && "on".equals(ifRemember))?true:false;
 		return loginService.login(request, response, userName, password, ifRem);
 	}
-	
+
 	@RequestMapping(value="logout", method=RequestMethod.POST)
 	@ResponseBody
 	@PermissionLimit(limit=false)
 	public ReturnT<String> logout(HttpServletRequest request, HttpServletResponse response){
 		return loginService.logout(request, response);
 	}
-	
+
 	@RequestMapping("/help")
 	public String help() {
 
@@ -85,5 +88,5 @@ public class IndexController {
 		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
-	
+
 }

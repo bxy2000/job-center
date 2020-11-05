@@ -3,7 +3,7 @@ $(function() {
 	// init date tables
 	var userListTable = $("#user_list").dataTable({
 		"deferRender": true,
-		"processing" : true, 
+		"processing" : true,
 	    "serverSide": true,
 		"ajax": {
 			url: base_url + "/user/pageList",
@@ -33,7 +33,7 @@ $(function() {
 					},
 	                {
 	                	"data": 'password',
-						"visible" : true,
+						"visible" : false,
                         "width":'20%',
                         "render": function ( data, type, row ) {
                             return '*********';
@@ -106,7 +106,7 @@ $(function() {
 	$('#searchBtn').on('click', function(){
         userListTable.fnDraw();
 	});
-	
+
 	// job operate
 	$("#user_list").on('click', '.delete',function() {
 		var id = $(this).parent('p').attr("id");
@@ -159,9 +159,9 @@ $(function() {
 		$('#addModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
 	var addModalValidate = $("#addModal .form").validate({
-		errorElement : 'span',  
+		errorElement : 'span',
         errorClass : 'help-block',
-        focusInvalid : true,  
+        focusInvalid : true,
         rules : {
             username : {
 				required : true,
@@ -172,7 +172,7 @@ $(function() {
                 required : true,
                 rangelength:[4, 20]
             }
-        }, 
+        },
         messages : {
             username : {
             	required : I18n.system_please_input + I18n.user_username,
@@ -183,15 +183,15 @@ $(function() {
                 rangelength: I18n.system_lengh_limit + "[4-20]"
             }
         },
-		highlight : function(element) {  
-            $(element).closest('.form-group').addClass('has-error');  
+		highlight : function(element) {
+            $(element).closest('.form-group').addClass('has-error');
         },
-        success : function(label) {  
-            label.closest('.form-group').removeClass('has-error');  
-            label.remove();  
+        success : function(label) {
+            label.closest('.form-group').removeClass('has-error');
+            label.remove();
         },
-        errorPlacement : function(error, element) {  
-            element.parent('div').append(error);  
+        errorPlacement : function(error, element) {
+            element.parent('div').append(error);
         },
         submitHandler : function(form) {
 
@@ -271,18 +271,18 @@ $(function() {
 		$('#updateModal').modal({backdrop: false, keyboard: false}).modal('show');
 	});
 	var updateModalValidate = $("#updateModal .form").validate({
-		errorElement : 'span',  
+		errorElement : 'span',
         errorClass : 'help-block',
         focusInvalid : true,
 		highlight : function(element) {
-            $(element).closest('.form-group').addClass('has-error');  
+            $(element).closest('.form-group').addClass('has-error');
         },
-        success : function(label) {  
-            label.closest('.form-group').removeClass('has-error');  
-            label.remove();  
+        success : function(label) {
+            label.closest('.form-group').removeClass('has-error');
+            label.remove();
         },
-        errorPlacement : function(error, element) {  
-            element.parent('div').append(error);  
+        errorPlacement : function(error, element) {
+            element.parent('div').append(error);
         },
         submitHandler : function(form) {
 

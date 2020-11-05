@@ -53,6 +53,13 @@ public class UserController {
         List<JobUser> list = jobUserDao.pageList(start, length, username, role);
         int list_count = jobUserDao.pageListCount(start, length, username, role);
 
+        // filter
+        if (list!=null && list.size()>0) {
+            for (JobUser item: list) {
+                item.setPassword(null);
+            }
+        }
+
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
         maps.put("recordsTotal", list_count);		// 总记录数
