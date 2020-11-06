@@ -2,6 +2,7 @@
 /job-admin/target/
 /job-core/target/
 /job-executor/target/
+/job-executor-kettle/target/
 /job-registry/target/
 /job-rpc/target/
 /assembly/target/
