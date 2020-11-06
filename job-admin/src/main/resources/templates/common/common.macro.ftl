@@ -8,11 +8,9 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap -->
-    <link rel="stylesheet"
-          href="${request.contextPath}/static/adminlte/bower_components/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/bootstrap/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="${request.contextPath}/static/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/Ionicons/css/ionicons.min.css">
     <!-- Theme style -->
@@ -28,8 +26,7 @@
     <![endif]-->
 
     <!-- pace -->
-    <link rel="stylesheet"
-          href="${request.contextPath}/static/adminlte/bower_components/PACE/themes/blue/pace-theme-flash.css">
+    <link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/PACE/themes/blue/pace-theme-flash.css">
 
 <#-- i18n -->
     <#global I18n = I18nUtil.getMultString()?eval />
@@ -37,9 +34,9 @@
 </#macro>
 
 <#macro commonScript>
-    <!-- jQuery 2.1.4 -->
+    <!-- jQuery -->
     <script src="${request.contextPath}/static/adminlte/bower_components/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 3.3.5 -->
+    <!-- Bootstrap -->
     <script src="${request.contextPath}/static/adminlte/bower_components/bootstrap/js/bootstrap.min.js"></script>
     <!-- FastClick -->
     <script src="${request.contextPath}/static/adminlte/bower_components/fastclick/fastclick.js"></script>

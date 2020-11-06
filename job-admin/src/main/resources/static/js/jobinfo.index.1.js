@@ -387,7 +387,7 @@ $(function() {
 			},
 			author : {
 				required : true
-			},/*
+			}/*,
             executorTimeout : {
                 digits:true
             },
@@ -445,7 +445,7 @@ $(function() {
 			}
 			$("#addModal .form input[name='scheduleConf']").val( scheduleConf );
 
-			$.post(base_url + "/jobinfo/add",  $("#addModal .form").serialize(), function(data, status) {
+			    $.post(base_url + "/jobinfo/add",  $("#addModal .form").serialize(), function(data, status) {
     			if (data.code == "200") {
 					$('#addModal').modal('hide');
 					layer.open({
