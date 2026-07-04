@@ -1,9 +1,7 @@
 package com.boxy.job.core.handler.impl;
 
-import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.handler.IJobHandler;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MethodJobHandler extends IJobHandler {
@@ -22,19 +20,19 @@ public class MethodJobHandler extends IJobHandler {
     }
 
     @Override
-    public ReturnT<String> execute(String param) throws Exception {
-        return (ReturnT<String>) method.invoke(target, new Object[]{param});
+    public void execute() throws Exception {
+        method.invoke(target);
     }
 
     @Override
-    public void init() throws InvocationTargetException, IllegalAccessException {
+    public void init() throws Exception {
         if(initMethod != null) {
             initMethod.invoke(target);
         }
     }
 
     @Override
-    public void destroy() throws InvocationTargetException, IllegalAccessException {
+    public void destroy() throws Exception {
         if(destroyMethod != null) {
             destroyMethod.invoke(target);
         }

@@ -1,0 +1,18 @@
+[Unit]
+Description=Job Center Admin
+After=network.target syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/job-center/bin/job-admin
+ExecStart=/usr/bin/java -jar /opt/job-center/bin/job-admin/job-admin.jar --spring.config.local=application.yml
+ExecStop=/bin/kill -s TERM $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+SuccessExitStatus=143
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

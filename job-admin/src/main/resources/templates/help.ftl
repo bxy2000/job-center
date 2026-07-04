@@ -11,7 +11,7 @@
 	<@netCommon.commonHeader />
 	<!-- left -->
 	<@netCommon.commonLeft "help" />
-	
+
 	<!-- Content Wrapper. Contains page content -->
 	<div class="content-wrapper">
 		<!-- Content Header (Page header) -->
@@ -22,17 +22,32 @@
 		<!-- Main content -->
 		<section class="content">
 			<div class="callout callout-info">
-				<h4>${I18n.admin_name_full}</h4>
-				<br>
+				<h4>power shell 调用kettle转换</h4>
 				<p>
+				<pre>
+c:
+cd /
+cd data-integration
+./Pan.bat /file /kettle/教务学生表到学工学生表.ktr /level Detailed
+				</pre>
 				</p>
-				<p></p>
-            </div>
+			</div>
+			<div class="callout callout-info">
+				<h4>power shell 调用kettle任务</h4>
+				<p>
+				<pre>
+c:
+cd /
+cd data-integration
+./Kitchen.bat /file /kettle/timer/timer.kjb /level Detailed
+				</pre>
+				</p>
+			</div>
 		</section>
 		<!-- /.content -->
 	</div>
 	<!-- /.content-wrapper -->
-	
+
 	<!-- footer -->
 	<@netCommon.commonFooter />
 </div>

@@ -8,16 +8,19 @@ import com.boxy.job.admin.core.model.JobUser;
 import com.boxy.job.admin.core.route.ExecutorRouteStrategyEnum;
 import com.boxy.job.admin.core.scheduler.MisfireStrategyEnum;
 import com.boxy.job.admin.core.scheduler.ScheduleTypeEnum;
+import com.boxy.job.admin.core.thread.JobScheduleHelper;
 import com.boxy.job.admin.core.thread.JobTriggerPoolHelper;
 import com.boxy.job.admin.core.trigger.TriggerTypeEnum;
 import com.boxy.job.admin.core.util.I18nUtil;
 import com.boxy.job.admin.dao.JobGroupDao;
-import com.boxy.job.admin.service.LoginService;
 import com.boxy.job.admin.service.JobService;
+import com.boxy.job.admin.service.LoginService;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.enums.ExecutorBlockStrategyEnum;
 import com.boxy.job.core.glue.GlueTypeEnum;
 import com.boxy.job.core.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +39,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/jobinfo")
 public class JobInfoController {
+    private static Logger logger = LoggerFactory.getLogger(JobInfoController.class);
 
     @Resource
     private JobGroupDao jobGroupDao;
@@ -148,21 +152,25 @@ public class JobInfoController {
 
     @RequestMapping("/nextTriggerTime")
     @ResponseBody
-    public ReturnT<List<String>> nextTriggerTime(String cron) {
+    public ReturnT<List<String>> nextTriggerTime(String scheduleType, String scheduleConf) {
+        JobInfo jobInfo = new JobInfo();
+        jobInfo.setScheduleType(scheduleType);
+        jobInfo.setScheduleConf(scheduleConf);
+
         List<String> result = new ArrayList<>();
         try {
-            CronExpression cronExpression = new CronExpression(cron);
             Date lastTime = new Date();
             for (int i = 0; i < 5; i++) {
-                lastTime = cronExpression.getNextValidTimeAfter(lastTime);
+                lastTime = JobScheduleHelper.generateNextValidTime(jobInfo, lastTime);
                 if (lastTime != null) {
                     result.add(DateUtil.formatDateTime(lastTime));
                 } else {
                     break;
                 }
             }
-        } catch (ParseException e) {
-            return new ReturnT<List<String>>(ReturnT.FAIL_CODE, I18nUtil.getString("jobinfo_field_cron_unvalid"));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new ReturnT<List<String>>(ReturnT.FAIL_CODE, (I18nUtil.getString("schedule_type")+I18nUtil.getString("system_unvalid")) + e.getMessage());
         }
         return new ReturnT<List<String>>(result);
     }

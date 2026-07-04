@@ -11,9 +11,10 @@ public class ScriptUtilTest {
     public void testExecToFile() throws IOException {
         JobContext.setJobContext(new JobContext(
                 -1,
+                null,
                 "c:\\ls\\test1.log",
                 -1, -1));
-        ScriptUtil.execToFile("powershell", "c:\\data\\applogs\\job\\jobhandler\\gluesource\\4_1591689834000.ps1",
+        ScriptUtil.execToFile("powershell", "c:\\data\\applogs\\job\\jobhandler\\gluesource\\2_1605597335000.ps1",
                 "c:\\ls\\test.log");
     }
 }

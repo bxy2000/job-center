@@ -1,8 +1,8 @@
 package com.boxy.job.admin.controller;
 
 import com.boxy.job.admin.controller.annotation.PermissionLimit;
-import com.boxy.job.admin.service.LoginService;
 import com.boxy.job.admin.service.JobService;
+import com.boxy.job.admin.service.LoginService;
 import com.boxy.job.core.biz.model.ReturnT;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -49,10 +49,10 @@ public class IndexController {
 
 	@RequestMapping("/toLogin")
 	@PermissionLimit(limit=false)
-	public ModelAndView toLogin(HttpServletRequest request, HttpServletResponse response, ModelAndView model) {
+	public ModelAndView toLogin(HttpServletRequest request, HttpServletResponse response, ModelAndView modelAndView) {
 		if (loginService.ifLogin(request, response) != null) {
-			model.setView(new RedirectView("/",true,false));
-			return model;
+			modelAndView.setView(new RedirectView("/",true,false));
+			return modelAndView;
 		}
 		return new ModelAndView("login");
 	}

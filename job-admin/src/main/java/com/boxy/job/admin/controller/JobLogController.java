@@ -1,5 +1,6 @@
 package com.boxy.job.admin.controller;
 
+import com.boxy.job.admin.core.complete.JobCompleter;
 import com.boxy.job.admin.core.scheduler.JobScheduler;
 import com.boxy.job.admin.core.exception.JobException;
 import com.boxy.job.admin.core.model.JobGroup;
@@ -179,7 +180,7 @@ public class JobLogController {
 			log.setHandleCode(ReturnT.FAIL_CODE);
 			log.setHandleMsg( I18nUtil.getString("joblog_kill_log_byman")+":" + (runResult.getMsg()!=null?runResult.getMsg():""));
 			log.setHandleTime(new Date());
-			jobLogDao.updateHandleInfo(log);
+			JobCompleter.updateHandleInfoAndFinish(log);
 			return new ReturnT<String>(runResult.getMsg());
 		} else {
 			return new ReturnT<String>(500, runResult.getMsg());

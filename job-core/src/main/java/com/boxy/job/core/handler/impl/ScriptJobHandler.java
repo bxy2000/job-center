@@ -1,11 +1,10 @@
 package com.boxy.job.core.handler.impl;
 
 import com.boxy.job.core.context.JobContext;
+import com.boxy.job.core.context.JobHelper;
 import com.boxy.job.core.glue.GlueTypeEnum;
-import com.boxy.job.core.log.JobFileAppender;
-import com.boxy.job.core.log.JobLogger;
-import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.handler.IJobHandler;
+import com.boxy.job.core.log.JobFileAppender;
 import com.boxy.job.core.util.ScriptUtil;
 
 import java.io.File;
@@ -43,10 +42,11 @@ public class ScriptJobHandler extends IJobHandler {
     }
 
     @Override
-    public ReturnT<String> execute(String param) throws Exception {
+    public void execute() throws Exception {
 
         if (!glueType.isScript()) {
-            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "glueType["+ glueType +"] invalid.");
+            JobHelper.handleFail("glueType["+ glueType +"] invalid.");
+            return;
         }
 
         // cmd
@@ -69,18 +69,20 @@ public class ScriptJobHandler extends IJobHandler {
 
         // script params：0=param、1=分片序号、2=分片总数
         String[] scriptParams = new String[3];
-        scriptParams[0] = param;
+        scriptParams[0] = JobHelper.getJobParam();
         scriptParams[1] = String.valueOf(JobContext.getJobContext().getShardIndex());
         scriptParams[2] = String.valueOf(JobContext.getJobContext().getShardTotal());
 
         // invoke
-        JobLogger.log("----------- script file:"+ scriptFileName +" -----------");
+        JobHelper.log("----------- script file:"+ scriptFileName +" -----------");
         int exitValue = ScriptUtil.execToFile(cmd, scriptFileName, logFileName, scriptParams);
 
         if (exitValue == 0) {
-            return IJobHandler.SUCCESS;
+            JobHelper.handleSuccess();
+            return;
         } else {
-            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "script exit value("+exitValue+") is failed");
+            JobHelper.handleFail("script exit value("+exitValue+") is failed");
+            return;
         }
 
     }

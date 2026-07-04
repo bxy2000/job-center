@@ -74,7 +74,7 @@ public class JobSpringExecutor extends JobExecutor implements ApplicationContext
             }
 
             for (Map.Entry<Method, Job> methodJobEntry : annotatedMethods.entrySet()) {
-                Method method = methodJobEntry.getKey();
+                Method executeMethod = methodJobEntry.getKey();
                 Job job = methodJobEntry.getValue();
                 if (job == null) {
                     continue;
@@ -82,22 +82,23 @@ public class JobSpringExecutor extends JobExecutor implements ApplicationContext
 
                 String name = job.value();
                 if (name.trim().length() == 0) {
-                    throw new RuntimeException("job method-jobhandler name invalid, for[" + bean.getClass() + "#" + method.getName() + "] .");
+                    throw new RuntimeException("job method-jobhandler name invalid, for[" + bean.getClass() + "#" + executeMethod.getName() + "] .");
                 }
                 if (loadJobHandler(name) != null) {
                     throw new RuntimeException("job jobhandler[" + name + "] naming conflicts.");
                 }
 
                 // execute method
-                if (!(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(String.class))) {
+                /*if (!(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(String.class))) {
                     throw new RuntimeException("job method-jobhandler param-classtype invalid, for[" + bean.getClass() + "#" + method.getName() + "] , " +
                             "The correct method format like \" public ReturnT<String> execute(String param) \" .");
                 }
                 if (!method.getReturnType().isAssignableFrom(ReturnT.class)) {
                     throw new RuntimeException("job method-jobhandler return-classtype invalid, for[" + bean.getClass() + "#" + method.getName() + "] , " +
                             "The correct method format like \" public ReturnT<String> execute(String param) \" .");
-                }
-                method.setAccessible(true);
+                }*/
+
+                executeMethod.setAccessible(true);
 
                 // init and destory
                 Method initMethod = null;
@@ -108,7 +109,7 @@ public class JobSpringExecutor extends JobExecutor implements ApplicationContext
                         initMethod = bean.getClass().getDeclaredMethod(job.init());
                         initMethod.setAccessible(true);
                     } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("job method-jobhandler initMethod invalid, for[" + bean.getClass() + "#" + method.getName() + "] .");
+                        throw new RuntimeException("job method-jobhandler initMethod invalid, for[" + bean.getClass() + "#" + executeMethod.getName() + "] .");
                     }
                 }
                 if (job.destroy().trim().length() > 0) {
@@ -116,12 +117,12 @@ public class JobSpringExecutor extends JobExecutor implements ApplicationContext
                         destroyMethod = bean.getClass().getDeclaredMethod(job.destroy());
                         destroyMethod.setAccessible(true);
                     } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("job method-jobhandler destroyMethod invalid, for[" + bean.getClass() + "#" + method.getName() + "] .");
+                        throw new RuntimeException("job method-jobhandler destroyMethod invalid, for[" + bean.getClass() + "#" + executeMethod.getName() + "] .");
                     }
                 }
 
                 // registry jobhandler
-                registJobHandler(name, new MethodJobHandler(bean, method, initMethod, destroyMethod));
+                registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
             }
         }
 

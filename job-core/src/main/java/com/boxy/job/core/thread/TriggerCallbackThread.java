@@ -4,9 +4,9 @@ import com.boxy.job.core.biz.AdminBiz;
 import com.boxy.job.core.biz.model.HandleCallbackParam;
 import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.context.JobContext;
+import com.boxy.job.core.context.JobHelper;
 import com.boxy.job.core.executor.JobExecutor;
 import com.boxy.job.core.log.JobFileAppender;
-import com.boxy.job.core.log.JobLogger;
 import com.boxy.job.core.enums.RegistryConfig;
 import com.boxy.job.core.util.FileUtil;
 import com.boxy.job.core.util.JdkSerializeTool;
@@ -192,10 +192,11 @@ public class TriggerCallbackThread {
             String logFileName = JobFileAppender.makeLogFileName(new Date(callbackParam.getLogDateTim()), callbackParam.getLogId());
             JobContext.setJobContext(new JobContext(
                     -1,
+                    null,
                     logFileName,
                     -1,
                     -1));
-            JobLogger.log(logContent);
+            JobHelper.log(logContent);
         }
     }
 

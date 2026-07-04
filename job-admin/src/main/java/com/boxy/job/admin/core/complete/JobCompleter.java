@@ -7,7 +7,7 @@ import com.boxy.job.admin.core.thread.JobTriggerPoolHelper;
 import com.boxy.job.admin.core.trigger.TriggerTypeEnum;
 import com.boxy.job.admin.core.util.I18nUtil;
 import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.job.core.handler.IJobHandler;
+import com.boxy.job.core.context.JobContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class JobCompleter {
 
         // 1、handle success, to trigger child job
         String triggerChildMsg = null;
-        if (IJobHandler.SUCCESS.getCode() == jobLog.getHandleCode()) {
+        if (JobContext.HANDLE_COCE_SUCCESS == jobLog.getHandleCode()) {
             JobInfo jobInfo = JobAdminConfig.getAdminConfig().getJobInfoDao().loadById(jobLog.getJobId());
             if (jobInfo!=null && jobInfo.getChildJobId()!=null && jobInfo.getChildJobId().trim().length()>0) {
                 triggerChildMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";

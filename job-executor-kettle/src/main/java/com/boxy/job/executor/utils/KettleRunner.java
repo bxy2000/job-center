@@ -1,8 +1,6 @@
 package com.boxy.job.executor.utils;
 
-import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.job.core.log.JobLogger;
-import com.boxy.job.executor.service.KettleJob;
+import com.boxy.job.core.context.JobHelper;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -27,7 +25,7 @@ public class KettleRunner {
         }
     }
 
-    public static ReturnT<String> runJobFromFileSystem(String filename) throws Exception {
+    public static void runJobFromFileSystem(String filename) throws Exception {
 
         JobMeta jobMeta = new JobMeta(filename, null);
 
@@ -41,18 +39,18 @@ public class KettleRunner {
 
         Result result = job.getResult();
 
-        JobLogger.log(result.getLogText());
+        JobHelper.log(result.getLogText());
 
         job = null;
         jobMeta = null;
         if (result.getNrErrors() == 0) {
-            return ReturnT.SUCCESS;
+            JobHelper.handleSuccess();
         } else {
-            return ReturnT.FAIL;
+            JobHelper.handleFail();
         }
     }
 
-    public static ReturnT<String> runTransformationFromFileSystem(String filename) throws Exception {
+    public static void runTransformationFromFileSystem(String filename) throws Exception {
 
         TransMeta transMeta = new TransMeta(filename, (Repository) null);
 
@@ -70,7 +68,7 @@ public class KettleRunner {
 
         String logText = appender.getBuffer(transformation.getLogChannelId(), false).toString();
 
-        JobLogger.log(logText);
+        JobHelper.log(logText);
 
 //        System.out.println("\n====================\n" + logText + "\n====================\n");
 
@@ -78,9 +76,9 @@ public class KettleRunner {
         transMeta = null;
 
         if (result.getNrErrors() == 0) {
-            return ReturnT.SUCCESS;
+            JobHelper.handleSuccess();
         } else {
-            return ReturnT.FAIL;
+            JobHelper.handleFail();
         }
     }
 }

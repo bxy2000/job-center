@@ -4,11 +4,7 @@ import com.boxy.job.core.biz.ExecutorBiz;
 import com.boxy.job.core.biz.model.*;
 import com.boxy.job.core.util.JobRemotingUtil;
 
-/**
- * admin api test
- *
- * @author xuxueli 2017-07-28 22:14:52
- */
+
 public class ExecutorBizClient implements ExecutorBiz {
 
     public ExecutorBizClient() {

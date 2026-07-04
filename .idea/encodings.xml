@@ -3,17 +3,23 @@
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/assembly" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/assembly/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/assembly/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-admin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-admin/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-admin/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/job-core/src/main/java/com/boxy/job/core/util/ScriptUtil.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/job-core/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor-kettle/lib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor-kettle/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor-kettle/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/job-executor/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

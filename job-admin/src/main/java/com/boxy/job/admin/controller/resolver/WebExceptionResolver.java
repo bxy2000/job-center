@@ -1,7 +1,7 @@
 package com.boxy.job.admin.controller.resolver;
 
-import com.boxy.job.admin.core.util.JacksonUtil;
 import com.boxy.job.admin.core.exception.JobException;
+import com.boxy.job.admin.core.util.JacksonUtil;
 import com.boxy.job.core.biz.model.ReturnT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

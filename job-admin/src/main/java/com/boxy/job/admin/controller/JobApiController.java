@@ -2,8 +2,6 @@ package com.boxy.job.admin.controller;
 
 import com.boxy.job.admin.controller.annotation.PermissionLimit;
 import com.boxy.job.admin.core.conf.JobAdminConfig;
-import com.boxy.job.admin.core.exception.JobException;
-import com.boxy.job.admin.core.util.JacksonUtil;
 import com.boxy.job.core.biz.AdminBiz;
 import com.boxy.job.core.biz.model.HandleCallbackParam;
 import com.boxy.job.core.biz.model.RegistryParam;
@@ -27,13 +25,6 @@ public class JobApiController {
     @Resource
     private AdminBiz adminBiz;
 
-    /**
-     * api
-     *
-     * @param uri
-     * @param data
-     * @return
-     */
     @RequestMapping("/{uri}")
     @ResponseBody
     @PermissionLimit(limit=false)
@@ -41,30 +32,32 @@ public class JobApiController {
 
         // valid
         if (!"POST".equalsIgnoreCase(request.getMethod())) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "invalid request, HttpMethod not support.");
+            return new ReturnT<>(ReturnT.FAIL_CODE, "invalid request, HttpMethod not support.");
         }
         if (uri==null || uri.trim().length()==0) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "invalid request, uri-mapping empty.");
+            return new ReturnT<>(ReturnT.FAIL_CODE, "invalid request, uri-mapping empty.");
         }
         if (JobAdminConfig.getAdminConfig().getAccessToken()!=null
                 && JobAdminConfig.getAdminConfig().getAccessToken().trim().length()>0
                 && !JobAdminConfig.getAdminConfig().getAccessToken().equals(request.getHeader(JobRemotingUtil.JOB_ACCESS_TOKEN))) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "The access token is wrong.");
+            return new ReturnT<>(ReturnT.FAIL_CODE, "The access token is wrong.");
         }
 
         // services mapping
-        if ("callback".equals(uri)) {
-            List<HandleCallbackParam> callbackParamList = GsonTool.fromJson(data, List.class, HandleCallbackParam.class);
-            return adminBiz.callback(callbackParamList);
-        } else if ("registry".equals(uri)) {
-            RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
-            return adminBiz.registry(registryParam);
-        } else if ("registryRemove".equals(uri)) {
-            RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
-            return adminBiz.registryRemove(registryParam);
-        } else {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "invalid request, uri-mapping("+ uri +") not found.");
+        switch (uri) {
+            case "callback":
+                List<HandleCallbackParam> callbackParamList = GsonTool.fromJson(data, List.class, HandleCallbackParam.class);
+                return adminBiz.callback(callbackParamList);
+            case "registry": {
+                RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
+                return adminBiz.registry(registryParam);
+            }
+            case "registryRemove": {
+                RegistryParam registryParam = GsonTool.fromJson(data, RegistryParam.class);
+                return adminBiz.registryRemove(registryParam);
+            }
+            default:
+                return new ReturnT<>(ReturnT.FAIL_CODE, "invalid request, uri-mapping(" + uri + ") not found.");
         }
-
     }
 }

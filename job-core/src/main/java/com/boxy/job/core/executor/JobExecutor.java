@@ -164,12 +164,12 @@ public class JobExecutor {
 
     // ---------------------- job handler repository ----------------------
     private static ConcurrentMap<String, IJobHandler> jobHandlerRepository = new ConcurrentHashMap<String, IJobHandler>();
+    public static IJobHandler loadJobHandler(String name){
+        return jobHandlerRepository.get(name);
+    }
     public static IJobHandler registJobHandler(String name, IJobHandler jobHandler){
         logger.info(">>>>>>>>>>> job register jobhandler success, name:{}, jobHandler:{}", name, jobHandler);
         return jobHandlerRepository.put(name, jobHandler);
-    }
-    public static IJobHandler loadJobHandler(String name){
-        return jobHandlerRepository.get(name);
     }
 
 

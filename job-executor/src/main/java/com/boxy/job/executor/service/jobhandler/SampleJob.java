@@ -1,10 +1,8 @@
 package com.boxy.job.executor.service.jobhandler;
 
-import com.boxy.job.core.biz.model.ReturnT;
 import com.boxy.job.core.context.JobContext;
-import com.boxy.job.core.handler.IJobHandler;
+import com.boxy.job.core.context.JobHelper;
 import com.boxy.job.core.handler.annotation.Job;
-import com.boxy.job.core.log.JobLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -35,14 +33,13 @@ public class SampleJob {
      * 1、简单任务示例（Bean模式）
      */
     @Job("demoJobHandler")
-    public ReturnT<String> demoJobHandler(String param) throws Exception {
-        JobLogger.log("JOB, Hello World.");
+    public void demoJobHandler() throws Exception {
+        JobHelper.log("JOB, Hello World.");
 
         for (int i = 0; i < 5; i++) {
-            JobLogger.log("beat at:" + i);
+            JobHelper.log("beat at:" + i);
             TimeUnit.SECONDS.sleep(2);
         }
-        return ReturnT.SUCCESS;
     }
 
 
@@ -50,24 +47,22 @@ public class SampleJob {
      * 2、分片广播任务
      */
     @Job("shardingJobHandler")
-    public ReturnT<String> shardingJobHandler(String param) throws Exception {
+    public void shardingJobHandler() throws Exception {
 
         // 分片参数
-        int shardIndex = JobContext.getJobContext().getShardIndex();
-        int shardTotal = JobContext.getJobContext().getShardTotal();
+        int shardIndex = JobHelper.getShardIndex();
+        int shardTotal = JobHelper.getShardTotal();
 
-        JobLogger.log("分片参数：当前分片序号 = {}, 总分片数 = {}", shardIndex, shardTotal);
+        JobHelper.log("分片参数：当前分片序号 = {}, 总分片数 = {}", shardIndex, shardTotal);
 
         // 业务逻辑
         for (int i = 0; i < shardTotal; i++) {
             if (i == shardIndex) {
-                JobLogger.log("第 {} 片, 命中分片开始处理", i);
+                JobHelper.log("第 {} 片, 命中分片开始处理", i);
             } else {
-                JobLogger.log("第 {} 片, 忽略", i);
+                JobHelper.log("第 {} 片, 忽略", i);
             }
         }
-
-        return ReturnT.SUCCESS;
     }
 
 
@@ -75,8 +70,8 @@ public class SampleJob {
      * 3、命令行任务
      */
     @Job("commandJobHandler")
-    public ReturnT<String> commandJobHandler(String param) throws Exception {
-        String command = param;
+    public void commandJobHandler() throws Exception {
+        String command = JobHelper.getJobParam();
         int exitValue = -1;
 
         BufferedReader bufferedReader = null;
@@ -95,24 +90,22 @@ public class SampleJob {
             // command log
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                JobLogger.log(line);
+                JobHelper.log(line);
             }
 
             // command exit
             process.waitFor();
             exitValue = process.exitValue();
         } catch (Exception e) {
-            JobLogger.log(e);
+            JobHelper.log(e);
         } finally {
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
         }
 
-        if (exitValue == 0) {
-            return IJobHandler.SUCCESS;
-        } else {
-            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "command exit value(" + exitValue + ") is failed");
+        if (exitValue != 0) {
+            JobHelper.handleFail("command exit value(" + exitValue + ") is failed");
         }
     }
 
@@ -125,12 +118,14 @@ public class SampleJob {
      * "data: content\n";
      */
     @Job("httpJobHandler")
-    public ReturnT<String> httpJobHandler(String param) throws Exception {
+    public void httpJobHandler() throws Exception {
 
         // param parse
+        String param = JobHelper.getJobParam();
         if (param == null || param.trim().length() == 0) {
-            JobLogger.log("param[" + param + "] invalid.");
-            return ReturnT.FAIL;
+            JobHelper.log("param[" + param + "] invalid.");
+            JobHelper.handleFail();
+            return;
         }
         String[] httpParams = param.split("\n");
         String url = null;
@@ -150,12 +145,14 @@ public class SampleJob {
 
         // param valid
         if (url == null || url.trim().length() == 0) {
-            JobLogger.log("url[" + url + "] invalid.");
-            return ReturnT.FAIL;
+            JobHelper.log("url[" + url + "] invalid.");
+            JobHelper.handleFail();
+            return;
         }
         if (method == null || !Arrays.asList("GET", "POST").contains(method)) {
-            JobLogger.log("method[" + method + "] invalid.");
-            return ReturnT.FAIL;
+            JobHelper.log("method[" + method + "] invalid.");
+            JobHelper.handleFail();
+            return;
         }
 
         boolean isPostMethod = method.equals("POST");
@@ -205,11 +202,13 @@ public class SampleJob {
             }
             String responseMsg = result.toString();
 
-            JobLogger.log(responseMsg);
-            return ReturnT.SUCCESS;
+            JobHelper.log(responseMsg);
+            return;
         } catch (Exception e) {
-            JobLogger.log(e);
-            return ReturnT.FAIL;
+            JobHelper.log(e);
+
+			JobHelper.handleFail();
+            return;
         } finally {
             try {
                 if (bufferedReader != null) {
@@ -219,7 +218,7 @@ public class SampleJob {
                     connection.disconnect();
                 }
             } catch (Exception e2) {
-                JobLogger.log(e2);
+                JobHelper.log(e2);
             }
         }
     }
@@ -228,9 +227,8 @@ public class SampleJob {
      * 5、生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑；
      */
     @Job(value = "demoJobHandler2", init = "init", destroy = "destroy")
-    public ReturnT<String> demoJobHandler2(String param) throws Exception {
-        JobLogger.log("JOB, Hello World.");
-        return ReturnT.SUCCESS;
+    public void demoJobHandler2() throws Exception {
+        JobHelper.log("JOB, Hello World.");
     }
 
     public void init() {

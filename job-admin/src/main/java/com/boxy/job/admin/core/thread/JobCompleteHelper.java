@@ -6,7 +6,6 @@ import com.boxy.job.admin.core.model.JobLog;
 import com.boxy.job.admin.core.util.I18nUtil;
 import com.boxy.job.core.biz.model.HandleCallbackParam;
 import com.boxy.job.core.biz.model.ReturnT;
-import com.boxy.job.core.handler.IJobHandler;
 import com.boxy.job.core.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +136,7 @@ public class JobCompleteHelper {
 				for (HandleCallbackParam handleCallbackParam: callbackParamList) {
 					ReturnT<String> callbackResult = callback(handleCallbackParam);
 					logger.debug(">>>>>>>>> JobApiController.callback {}, handleCallbackParam={}, callbackResult={}",
-							(callbackResult.getCode()== IJobHandler.SUCCESS.getCode()?"success":"fail"), handleCallbackParam, callbackResult);
+							(callbackResult.getCode()== ReturnT.SUCCESS_CODE?"success":"fail"), handleCallbackParam, callbackResult);
 				}
 			}
 		});
@@ -160,13 +159,13 @@ public class JobCompleteHelper {
 		if (log.getHandleMsg()!=null) {
 			handleMsg.append(log.getHandleMsg()).append("<br>");
 		}
-		if (handleCallbackParam.getExecuteResult().getMsg() != null) {
-			handleMsg.append(handleCallbackParam.getExecuteResult().getMsg());
+		if (handleCallbackParam.getHandleMsg() != null) {
+			handleMsg.append(handleCallbackParam.getHandleMsg());
 		}
 
 		// success, save log
 		log.setHandleTime(new Date());
-		log.setHandleCode(handleCallbackParam.getExecuteResult().getCode());
+		log.setHandleCode(handleCallbackParam.getHandleCode());
 		log.setHandleMsg(handleMsg.toString());
 		JobCompleter.updateHandleInfoAndFinish(log);
 

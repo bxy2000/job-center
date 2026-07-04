@@ -7,10 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="job-admin" />
         <module name="job-executor" />
         <module name="job-core" />
         <module name="job-kettle-executor" />
+        <module name="job-admin" />
         <module name="job-executor-kettle" />
       </profile>
     </annotationProcessing>
@@ -22,7 +22,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="job-executor-kettle" options="-extdirs C:\bxy\production\job-center\job-executor-kettle/lib" />
+      <module name="job-executor-kettle" options="-extdirs $PROJECT_DIR$/job-executor-kettle/lib" />
     </option>
   </component>
 </project>

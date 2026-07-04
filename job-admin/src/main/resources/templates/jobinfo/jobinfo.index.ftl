@@ -7,7 +7,7 @@
   	<link rel="stylesheet" href="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
     <title>${I18n.admin_name}</title>
 </head>
-<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["job_adminlte_settings"]?exists && "off" == cookieMap["xxljob_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["job_adminlte_settings"]?exists && "off" == cookieMap["job_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
 	<!-- header -->
 	<@netCommon.commonHeader />
@@ -245,16 +245,14 @@
 <textarea class="glueSource_java" style="display:none;" >
 package com.boxy.job.service.handler;
 
-import com.boxy.job.core.log.XxlJobLogger;
-import com.boxy.job.core.biz.model.ReturnT;
+import com.boxy.job.core.context.JobHelper;
 import com.boxy.job.core.handler.IJobHandler;
 
 public class DemoGlueJobHandler extends IJobHandler {
 
 	@Override
-	public ReturnT<String> execute(String param) throws Exception {
-		JobLogger.log("JOB-CENTER, Hello World.");
-		return ReturnT.SUCCESS;
+	public void execute() throws Exception {
+		JobHelper.log("JOB-CENTER, Hello World.");
 	}
 
 }

@@ -1,9 +1,9 @@
 package com.boxy.job.admin.controller.interceptor;
 
 import com.boxy.job.admin.controller.annotation.PermissionLimit;
-import com.boxy.job.admin.service.LoginService;
 import com.boxy.job.admin.core.model.JobUser;
 import com.boxy.job.admin.core.util.I18nUtil;
+import com.boxy.job.admin.service.LoginService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
